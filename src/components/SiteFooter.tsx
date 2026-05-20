@@ -10,13 +10,12 @@ export default function SiteFooter() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Logo & About Column */}
           <div className="space-y-4">
-            <Link href="/" className="flex flex-col select-none">
-              <span className="font-serif text-2xl tracking-wide text-white">
-                PureSweep
-              </span>
-              <span className="text-[9px] uppercase tracking-widest text-accent">
-                Cleaning Auckland
-              </span>
+            <Link href="/" className="flex items-center select-none">
+              <img 
+                src="/images/logo-primary.jpg" 
+                alt="PureSweep Cleaning" 
+                className="h-11 w-auto object-contain rounded-sm bg-white/5 p-1" 
+              />
             </Link>
             <p className="text-xs text-[#B2ABA0] leading-relaxed max-w-xs">
               Exceptional residential and commercial cleaning services based in Hillsborough, Auckland. Setting standards through workmanship, clear pricing, and careful attention.

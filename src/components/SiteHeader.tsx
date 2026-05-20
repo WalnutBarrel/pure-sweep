@@ -22,13 +22,12 @@ export default function SiteHeader() {
       <Container>
         <div className="flex h-20 items-center justify-between">
           {/* Brand Logo */}
-          <Link href="/" className="group flex flex-col">
-            <span className="font-serif text-xl tracking-wide font-normal text-primary group-hover:text-accent transition-colors duration-hover">
-              PureSweep
-            </span>
-            <span className="text-[9px] uppercase tracking-widest text-muted-text -mt-1">
-              Cleaning Auckland
-            </span>
+          <Link href="/" className="group flex items-center">
+            <img 
+              src="/images/logo-primary.jpg" 
+              alt="PureSweep Cleaning" 
+              className="h-10 w-auto object-contain" 
+            />
           </Link>
 
           {/* Desktop Nav */}

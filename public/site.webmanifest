@@ -1,0 +1,21 @@
+{
+  "name": "PureSweep Cleaning",
+  "short_name": "PureSweep",
+  "description": "Premium cleaning services in Auckland, New Zealand.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F0F5F9",
+  "theme_color": "#1C2422",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

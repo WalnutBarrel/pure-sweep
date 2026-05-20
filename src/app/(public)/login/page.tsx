@@ -53,10 +53,16 @@ function LoginForm() {
   return (
     <div className="container mx-auto py-24 flex items-center justify-center animate-enter-fade font-sans">
       <div className="border border-border p-10 max-w-md w-full bg-stone-50/50 space-y-8">
-        <div className="text-center space-y-2">
-          <span className="text-xs font-bold uppercase tracking-widest text-accent">Admin Portal</span>
-          <h1 className="font-serif text-3xl font-light text-primary">Login</h1>
-          <p className="text-xs text-stone-400">Authorized access only.</p>
+        <div className="flex flex-col items-center text-center space-y-4">
+          <img 
+            src="/images/logo-primary.jpg" 
+            alt="PureSweep Cleaning" 
+            className="h-16 w-auto object-contain" 
+          />
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-accent">Admin Console</span>
+            <p className="text-[11px] text-stone-400 mt-1">Authorized personnel only.</p>
+          </div>
         </div>
 
         {error && (
