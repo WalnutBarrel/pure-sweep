@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { InvoicesClient } from "./InvoicesClient";
 import { SectionHeader } from "@/components/admin/DataTable";
+import { serialize } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -30,9 +31,9 @@ export default async function AdminInvoicesPage() {
       />
 
       <InvoicesClient
-        invoices={invoices}
-        customers={customers}
-        bookings={bookings}
+        invoices={serialize(invoices)}
+        customers={serialize(customers)}
+        bookings={serialize(bookings)}
       />
     </div>
   );

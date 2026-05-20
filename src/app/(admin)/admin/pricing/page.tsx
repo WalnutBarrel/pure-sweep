@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { PricingClient } from "./PricingClient";
 import { SectionHeader } from "@/components/admin/DataTable";
+import { serialize } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,7 @@ export default async function AdminPricingPage() {
         description="Manage base rates, pricing plans, and add-on costs"
       />
 
-      <PricingClient plans={plans} services={services} />
+      <PricingClient plans={serialize(plans)} services={serialize(services)} />
     </div>
   );
 }

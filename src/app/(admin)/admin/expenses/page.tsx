@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { ExpensesClient } from "./ExpensesClient";
 import { SectionHeader } from "@/components/admin/DataTable";
+import { serialize } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ export default async function AdminExpensesPage() {
         description={`${expenses.length} operating expenditures logged`}
       />
 
-      <ExpensesClient expenses={expenses} />
+      <ExpensesClient expenses={serialize(expenses)} />
     </div>
   );
 }

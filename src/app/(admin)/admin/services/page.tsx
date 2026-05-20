@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { ServicesClient } from "./ServicesClient";
 import { SectionHeader } from "@/components/admin/DataTable";
+import { serialize } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ export default async function AdminServicesPage() {
         description={`${services.length} signature cleaning services configured`}
       />
 
-      <ServicesClient services={services} />
+      <ServicesClient services={serialize(services)} />
     </div>
   );
 }

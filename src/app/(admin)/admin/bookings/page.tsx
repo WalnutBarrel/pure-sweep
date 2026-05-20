@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { BookingsClient } from "./BookingsClient";
 import { SectionHeader } from "@/components/admin/DataTable";
+import { serialize } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -35,10 +36,10 @@ export default async function AdminBookingsPage() {
       />
 
       <BookingsClient
-        bookings={bookings}
-        customers={customers}
-        staff={staff}
-        services={services}
+        bookings={serialize(bookings)}
+        customers={serialize(customers)}
+        staff={serialize(staff)}
+        services={serialize(services)}
       />
     </div>
   );
