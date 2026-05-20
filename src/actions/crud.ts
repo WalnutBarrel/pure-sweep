@@ -189,6 +189,11 @@ export async function createBookingAdmin(data: unknown) {
   }
 
   try {
+    const service = await prisma.service.findUnique({
+      where: { id: result.data.serviceId },
+    });
+    const serviceName = service ? service.name : "Residential Cleaning";
+
     const bookingRef = `PS-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     const booking = await prisma.booking.create({
       data: {
@@ -198,9 +203,22 @@ export async function createBookingAdmin(data: unknown) {
         preferredTime: result.data.preferredTime,
         status: result.data.status as BookingStatus,
         notes: result.data.notes,
+        propertyType: result.data.propertyType,
+        cleaningFrequency: result.data.cleaningFrequency,
         totalPrice: result.data.totalPrice,
         gstAmount: result.data.gstAmount,
         grandTotal: result.data.grandTotal,
+      },
+    });
+
+    await prisma.bookingItem.create({
+      data: {
+        bookingId: booking.id,
+        serviceId: result.data.serviceId,
+        serviceName,
+        quantity: 1,
+        unitPrice: result.data.totalPrice,
+        totalPrice: result.data.totalPrice,
       },
     });
 
@@ -229,6 +247,11 @@ export async function updateBookingAdmin(id: string, data: unknown) {
   }
 
   try {
+    const service = await prisma.service.findUnique({
+      where: { id: result.data.serviceId },
+    });
+    const serviceName = service ? service.name : "Residential Cleaning";
+
     const booking = await prisma.booking.update({
       where: { id },
       data: {
@@ -237,9 +260,27 @@ export async function updateBookingAdmin(id: string, data: unknown) {
         preferredTime: result.data.preferredTime,
         status: result.data.status as BookingStatus,
         notes: result.data.notes,
+        propertyType: result.data.propertyType,
+        cleaningFrequency: result.data.cleaningFrequency,
         totalPrice: result.data.totalPrice,
         gstAmount: result.data.gstAmount,
         grandTotal: result.data.grandTotal,
+      },
+    });
+
+    // Update booking items
+    await prisma.bookingItem.deleteMany({
+      where: { bookingId: id },
+    });
+
+    await prisma.bookingItem.create({
+      data: {
+        bookingId: id,
+        serviceId: result.data.serviceId,
+        serviceName,
+        quantity: 1,
+        unitPrice: result.data.totalPrice,
+        totalPrice: result.data.totalPrice,
       },
     });
 

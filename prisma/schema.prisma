@@ -172,9 +172,11 @@ model Booking {
   customer      Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
   
   preferredDate DateTime
-  preferredTime String          // E.g. "Morning", "Afternoon"
-  status        BookingStatus   @default(PENDING)
-  notes         String?         @db.Text
+  preferredTime     String          // E.g. "Morning", "Afternoon"
+  status            BookingStatus   @default(PENDING)
+  notes             String?         @db.Text
+  propertyType      String?
+  cleaningFrequency String?
   
   // Financial snapshots
   totalPrice    Decimal         @db.Decimal(10, 2) // Subtotal excluding GST

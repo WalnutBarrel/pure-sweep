@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { SettingsClient } from "./SettingsClient";
 import { SectionHeader } from "@/components/admin/DataTable";
+import { serialize } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -31,10 +32,10 @@ export default async function AdminSettingsPage() {
       />
 
       <SettingsClient
-        settings={settings}
-        staff={staff}
-        testimonials={testimonials}
-        activityLogs={activityLogs}
+        settings={serialize(settings)}
+        staff={serialize(staff)}
+        testimonials={serialize(testimonials)}
+        activityLogs={serialize(activityLogs)}
       />
     </div>
   );

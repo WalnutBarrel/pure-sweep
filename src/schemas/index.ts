@@ -71,6 +71,7 @@ export const adminPricingPlanSchema = z.object({
 
 export const adminBookingSchema = z.object({
   customerId: z.string().min(1, "Customer is required."),
+  serviceId: z.string().min(1, "Service option is required."),
   preferredDate: z.string().min(1, "Preferred date is required."),
   preferredTime: z.string().min(1, "Preferred time is required."),
   status: z.enum(["PENDING", "CONFIRMED", "IN_PROGRESS", "COMPLETED", "CANCELLED"]),
@@ -79,9 +80,21 @@ export const adminBookingSchema = z.object({
   gstAmount: z.coerce.number().min(0),
   grandTotal: z.coerce.number().min(0),
   assignedStaffId: z.string().optional().nullable(),
-  propertyType: z.string().optional().nullable(),
-  cleaningFrequency: z.string().optional().nullable(),
-});
+  propertyType: z.string().min(1, "Property type is required."),
+  cleaningFrequency: z.string().min(1, "Cleaning frequency is required."),
+}).refine(
+  (data) => {
+    if (!data.preferredDate) return true;
+    const selected = new Date(data.preferredDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return selected >= today;
+  },
+  {
+    message: "Preferred date cannot be in the past.",
+    path: ["preferredDate"],
+  }
+);
 
 export const adminCustomerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
