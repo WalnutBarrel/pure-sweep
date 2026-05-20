@@ -1,0 +1,384 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User Roles supporting standard admin tier
+enum UserRole {
+  OWNER
+  ADMIN
+  STAFF
+  CUSTOMER
+}
+
+// Service reservation statuses
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// Billing/Invoice payment tracking
+enum PaymentStatus {
+  UNPAID
+  PARTIAL
+  PAID
+  REFUNDED
+}
+
+// Small business expenditure categories
+enum ExpenseCategory {
+  SUPPLIES
+  EQUIPMENT
+  TRAVEL
+  SALARY
+  MARKETING
+  OTHER
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String          @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?         // Hashed password for credentials auth
+  role          UserRole        @default(CUSTOMER)
+  
+  accounts      Account[]
+  sessions      Session[]
+  
+  customerProfile Customer?     // One-to-one link to client details
+  staffProfile    Staff?        // One-to-one link to staff coordinates
+  activityLogs    ActivityLog[]
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deletedAt     DateTime?
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model Customer {
+  id        String    @id @default(cuid())
+  userId    String?   @unique
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  name      String
+  email     String    @unique
+  phone     String
+  address   String
+  suburb    String?
+  notes     String?   @db.Text
+  
+  bookings  Booking[]
+  invoices  Invoice[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([email])
+  @@index([userId])
+}
+
+model Service {
+  id               String        @id @default(cuid())
+  name             String
+  slug             String        @unique
+  description      String        @db.Text
+  basePrice        Decimal       @db.Decimal(10, 2)
+  priceType        String        // "HOURLY" or "FIXED"
+  priceDescription String        // e.g. "$40 + GST / hour"
+  category         String        // "Residential", "Commercial", etc.
+  features         String[]
+  isActive         Boolean       @default(true)
+  
+  bookingItems     BookingItem[]
+  pricingPlans     PricingPlan[]
+
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  deletedAt        DateTime?
+}
+
+model PricingPlan {
+  id          String   @id @default(cuid())
+  serviceId   String
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  
+  name        String
+  price       Decimal  @db.Decimal(10, 2)
+  description String
+  features    String[]
+  isActive    Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([serviceId])
+}
+
+model Booking {
+  id            String          @id @default(cuid())
+  bookingRef    String          @unique // E.g. "PS-2026-XXXX"
+  
+  customerId    String
+  customer      Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  preferredDate DateTime
+  preferredTime String          // E.g. "Morning", "Afternoon"
+  status        BookingStatus   @default(PENDING)
+  notes         String?         @db.Text
+  
+  // Financial snapshots
+  totalPrice    Decimal         @db.Decimal(10, 2) // Subtotal excluding GST
+  gstAmount     Decimal         @db.Decimal(10, 2) // 15% NZ GST
+  grandTotal    Decimal         @db.Decimal(10, 2) // Total payable
+  
+  bookingItems  BookingItem[]
+  invoices      Invoice[]
+  staffBookings StaffBookings[]
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deletedAt     DateTime?
+
+  @@index([customerId])
+  @@index([bookingRef])
+  @@index([preferredDate])
+  @@index([status])
+}
+
+model BookingItem {
+  id          String   @id @default(cuid())
+  bookingId   String
+  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  serviceId   String
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  serviceName String   // Snapshot of service name
+  
+  quantity    Int      @default(1) // E.g. hours or layouts quantity
+  unitPrice   Decimal  @db.Decimal(10, 2)
+  totalPrice  Decimal  @db.Decimal(10, 2)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([bookingId])
+  @@index([serviceId])
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique // E.g. "INV-2026-XXXX"
+  
+  bookingId     String
+  booking       Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  customerId    String
+  customer      Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  issueDate     DateTime
+  dueDate       DateTime
+  status        PaymentStatus @default(UNPAID)
+  
+  subtotal      Decimal       @db.Decimal(10, 2)
+  gstAmount     Decimal       @db.Decimal(10, 2)
+  totalAmount   Decimal       @db.Decimal(10, 2)
+  
+  invoiceItems  InvoiceItem[]
+  payments      Payment[]
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+
+  @@index([invoiceNumber])
+  @@index([bookingId])
+  @@index([customerId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  description String
+  quantity    Int      @default(1)
+  unitPrice   Decimal  @db.Decimal(10, 2)
+  totalPrice  Decimal  @db.Decimal(10, 2)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([invoiceId])
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  invoiceId      String
+  invoice        Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  amount         Decimal       @db.Decimal(10, 2)
+  paymentDate    DateTime
+  paymentMethod  String        // E.g. "BANK_TRANSFER", "CREDIT_CARD", "POLI"
+  transactionRef String?
+  status         PaymentStatus @default(PAID)
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([invoiceId])
+  @@index([paymentDate])
+}
+
+model Expense {
+  id          String          @id @default(cuid())
+  category    ExpenseCategory
+  amount      Decimal         @db.Decimal(10, 2) // Subtotal excluding GST
+  gstAmount   Decimal         @db.Decimal(10, 2)
+  date        DateTime
+  description String
+  recipient   String          // Vendor or employee name
+  receiptUrl  String?
+  notes       String?         @db.Text
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([category])
+  @@index([date])
+}
+
+model Staff {
+  id            String          @id @default(cuid())
+  userId        String          @unique
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  firstName     String
+  lastName      String
+  phone         String
+  hourlyRate    Decimal         @db.Decimal(10, 2)
+  isActive      Boolean         @default(true)
+  
+  staffBookings StaffBookings[]
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deletedAt     DateTime?
+
+  @@index([userId])
+  @@index([isActive])
+}
+
+model StaffBookings {
+  staffId    String
+  staff      Staff    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  
+  bookingId  String
+  booking    Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  assignedAt DateTime @default(now())
+
+  @@id([staffId, bookingId])
+  @@index([staffId])
+  @@index([bookingId])
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Testimonial {
+  id         String   @id @default(cuid())
+  quote      String   @db.Text
+  author     String
+  role       String?
+  location   String?
+  rating     Int      @default(5)
+  isApproved Boolean  @default(true)
+  
+  createdAt  DateTime @default(now())
+}
+
+model Setting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  
+  updatedAt   DateTime @updatedAt
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  action    String   // E.g. "CREATE_BOOKING", "PAYMENT_RECEIVED"
+  details   String   @db.Text
+  ipAddress String?
+  
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}

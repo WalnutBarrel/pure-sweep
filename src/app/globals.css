@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Auckland Clean Editorial Color Palette */
+    --background: #F7F4EF;
+    --surface: #FFFFFF;
+    --ink: #111827;
+    --muted-text: #6B7280;
+    --border: #DDD6CC;
+    
+    /* Brand Theme Colors */
+    --primary: #0F3D3E;
+    --primary-soft: #DDEBE7;
+    --accent: #B58A4A;
+    --accent-soft: #F1E3CF;
+    --success: #2F855A;
+    --danger: #B42318;
+    
+    --radius: 0px; /* Sharp editorial grid edges */
+    --font-mono: var(--font-geist-mono);
+
+    /* Easing curves from Emil Kowalski's guidelines */
+    --ease-out-quick: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  }
+
+  .dark {
+    /* Gentle, low-contrast dark mode maintaining clean borders */
+    --background: #121413;
+    --surface: #1B1E1C;
+    --ink: #F3F4F6;
+    --muted-text: #9CA3AF;
+    --border: #2D3330;
+    
+    --primary: #DDEBE7;
+    --primary-soft: #1C332F;
+    --accent: #D2B07E;
+    --accent-soft: #2D251A;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-primary-soft selection:text-primary;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Crisp Typography Defaults */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif), Georgia, serif;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+}
+
+@layer components {
+  /* Typography Classes */
+  .font-hero {
+    font-family: var(--font-serif), Georgia, serif;
+    @apply text-[34px] md:text-[42px] lg:text-[64px] font-light leading-[1.05] tracking-tight;
+  }
+
+  .font-page {
+    font-family: var(--font-serif), Georgia, serif;
+    @apply text-[30px] md:text-[36px] lg:text-[48px] font-light leading-[1.1] tracking-tight;
+  }
+
+  .font-section {
+    font-family: var(--font-serif), Georgia, serif;
+    @apply text-[26px] md:text-[30px] lg:text-[36px] font-light leading-snug tracking-tight;
+  }
+
+  .font-card-title {
+    font-family: var(--font-serif), Georgia, serif;
+    @apply text-[20px] font-normal leading-normal;
+  }
+
+  .font-body {
+    font-family: var(--font-sans), sans-serif;
+    @apply text-[16px] leading-relaxed;
+  }
+
+  .font-small {
+    font-family: var(--font-sans), sans-serif;
+    @apply text-[14px] leading-normal;
+  }
+
+  .font-caption {
+    font-family: var(--font-sans), sans-serif;
+    @apply text-[12px] tracking-widest uppercase text-muted-text font-semibold;
+  }
+
+  /* Button Styles */
+  .btn-base {
+    @apply inline-flex items-center justify-center px-6 py-3.5 text-xs font-bold tracking-widest uppercase outline-none transition-colors duration-hover ease-out-quick cursor-pointer select-none active:scale-[0.98];
+    transition-property: color, background-color, border-color, transform;
+  }
+
+  .btn-primary {
+    @apply btn-base bg-primary text-surface border border-primary hover:bg-transparent hover:text-primary;
+  }
+
+  .btn-secondary {
+    @apply btn-base bg-primary-soft text-primary border border-primary-soft hover:bg-transparent;
+  }
+
+  .btn-outline {
+    @apply btn-base border border-border bg-transparent text-ink hover:bg-ink hover:text-surface hover:border-ink;
+  }
+
+  .btn-accent {
+    @apply btn-base bg-accent text-surface border border-accent hover:bg-transparent hover:text-accent;
+  }
+
+  .btn-accent-soft {
+    @apply btn-base bg-accent-soft text-accent border border-accent-soft hover:bg-transparent;
+  }
+
+  /* Card Styles */
+  .card-editorial {
+    @apply bg-surface border border-border p-8 rounded-sm hover:border-accent transition-colors duration-hover ease-out-quick;
+  }
+
+  .card-premium {
+    @apply bg-surface border border-border p-10 rounded-sm relative overflow-hidden;
+  }
+
+  /* Form Styles */
+  .form-label {
+    @apply text-xs font-bold uppercase tracking-widest text-muted-text mb-2 block;
+  }
+
+  .form-input {
+    @apply w-full border border-border bg-surface px-4 py-3.5 text-sm font-sans placeholder-stone-400 outline-none transition-colors duration-hover ease-out-quick focus:border-primary focus:ring-0 rounded-none;
+  }
+
+  .form-select {
+    @apply w-full border border-border bg-surface px-4 py-3.5 text-sm font-sans outline-none transition-colors duration-hover ease-out-quick focus:border-primary focus:ring-0 rounded-none cursor-pointer;
+  }
+
+  .form-textarea {
+    @apply w-full border border-border bg-surface p-4 text-sm font-sans placeholder-stone-400 outline-none transition-colors duration-hover ease-out-quick focus:border-primary focus:ring-0 rounded-none resize-none;
+  }
+
+  /* Table Styles */
+  .table-editorial {
+    @apply w-full text-left border-collapse;
+  }
+
+  .table-editorial th {
+    @apply p-4 bg-background border-b border-border text-[10px] font-bold uppercase tracking-widest text-muted-text;
+  }
+
+  .table-editorial td {
+    @apply p-4 border-b border-border text-sm text-ink/90 font-sans;
+  }
+
+  .table-editorial tr:hover td {
+    @apply bg-background/30;
+  }
+
+  .td-mono {
+    font-family: var(--font-mono), monospace;
+    @apply tracking-tight font-medium;
+  }
+
+  /* Skeleton Loader Styles */
+  .skeleton {
+    @apply bg-stone-200/50 animate-pulse rounded-none;
+  }
+
+  /* Chart Placeholder Styles */
+  .chart-placeholder {
+    @apply border border-dashed border-border/80 bg-background flex flex-col items-center justify-center p-8 text-xs font-mono text-muted-text space-y-2 select-none;
+  }
+}
+
+/* Micro-animations and utility classes from design guidelines */
+
+.btn-press {
+  transition: transform 150ms var(--ease-out-quick);
+}
+
+.btn-press:active {
+  transform: scale(0.98);
+}
+
+.transition-editorial {
+  transition: all var(--transition-hover) var(--ease-out-quick);
+}
+
+/* Entry transitions */
+@keyframes enterFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-enter-fade {
+  animation: enterFade 300ms var(--ease-out-quick) forwards;
+}

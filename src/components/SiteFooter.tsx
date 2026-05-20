@@ -1,0 +1,105 @@
+import Link from "next/link";
+import Container from "./Container";
+
+export default function SiteFooter() {
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <footer className="bg-[#1C2422] text-[#E5E0D8] border-t border-[#2D3835] pt-20 pb-12 font-sans">
+      <Container className="space-y-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+          {/* Logo & About Column */}
+          <div className="space-y-4">
+            <Link href="/" className="flex flex-col select-none">
+              <span className="font-serif text-2xl tracking-wide text-white">
+                PureSweep
+              </span>
+              <span className="text-[9px] uppercase tracking-widest text-accent">
+                Cleaning Auckland
+              </span>
+            </Link>
+            <p className="text-xs text-[#B2ABA0] leading-relaxed max-w-xs">
+              Exceptional residential and commercial cleaning services based in Hillsborough, Auckland. Setting standards through workmanship, clear pricing, and careful attention.
+            </p>
+          </div>
+
+          {/* Directory Column */}
+          <div className="space-y-4">
+            <h4 className="text-[10px] uppercase tracking-widest font-bold text-white">
+              Nav Directory
+            </h4>
+            <ul className="space-y-2 text-xs text-[#B2ABA0]">
+              <li>
+                <Link href="/about" className="hover:text-accent transition-colors duration-hover">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/services" className="hover:text-accent transition-colors duration-hover">
+                  Cleaning Services
+                </Link>
+              </li>
+              <li>
+                <Link href="/pricing" className="hover:text-accent transition-colors duration-hover">
+                  Service Rates
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-accent transition-colors duration-hover">
+                  Get In Touch
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact Details Column */}
+          <div className="space-y-4">
+            <h4 className="text-[10px] uppercase tracking-widest font-bold text-white">
+              Office Details
+            </h4>
+            <div className="space-y-2 text-xs text-[#B2ABA0] leading-relaxed">
+              <p>
+                Hillsborough Road, Hillsborough 1042<br />
+                Auckland, New Zealand
+              </p>
+              <p>
+                Email: <span className="text-white hover:text-accent transition-colors">contact.puresweep@gmail.com</span><br />
+                Phone: <span className="text-white hover:text-accent transition-colors">021-026999-56</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Business Hours Column */}
+          <div className="space-y-4">
+            <h4 className="text-[10px] uppercase tracking-widest font-bold text-white">
+              Hours of Operation
+            </h4>
+            <div className="space-y-2 text-xs text-[#B2ABA0] leading-relaxed">
+              <p>
+                Monday - Saturday: 08:00 AM - 06:00 PM
+              </p>
+              <p>
+                Sunday: Closed
+              </p>
+              <p className="text-[10px] text-accent font-semibold pt-1">
+                Booking updates processed daily.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Lower Footer */}
+        <div className="border-t border-[#2D3835] pt-8 flex flex-col md:flex-row justify-between items-center text-[11px] text-[#B2ABA0] gap-4">
+          <p>© {currentYear} PureSweep Cleaning. All rights reserved.</p>
+          <div className="flex space-x-6">
+            <Link href="/admin/dashboard" className="hover:text-white transition-colors">
+              Console Admin Login
+            </Link>
+            <span className="text-[#2D3835]">|</span>
+            <p>Auckland Central & West Region</p>
+          </div>
+        </div>
+      </Container>
+    </footer>
+  );
+}
