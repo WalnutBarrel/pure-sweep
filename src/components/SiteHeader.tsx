@@ -24,7 +24,7 @@ export default function SiteHeader() {
           {/* Brand Logo */}
           <Link href="/" className="group flex items-center">
             <img 
-              src="/images/logo-primary.jpg" 
+              src="/images/logo_c.png" 
               alt="PureSweep Cleaning" 
               className="h-10 w-auto object-contain" 
             />

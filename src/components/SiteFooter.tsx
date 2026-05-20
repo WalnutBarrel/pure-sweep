@@ -12,9 +12,9 @@ export default function SiteFooter() {
           <div className="space-y-4">
             <Link href="/" className="flex items-center select-none">
               <img 
-                src="/images/logo-primary.jpg" 
+                src="/images/logo_c.png" 
                 alt="PureSweep Cleaning" 
-                className="h-11 w-auto object-contain rounded-sm bg-white/5 p-1" 
+                className="h-11 w-auto object-contain" 
               />
             </Link>
             <p className="text-xs text-[#B2ABA0] leading-relaxed max-w-xs">

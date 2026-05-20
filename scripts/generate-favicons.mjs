@@ -6,11 +6,11 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const publicDir = join(root, "public");
-const source = join(publicDir, "images", "logo_c.png");
+const source = join(publicDir, "images", "logo_s.png");
 const appDir = join(root, "src", "app");
 
 async function generateFavicons() {
-  console.log("Generating favicon set from public/images/logo_c.png...");
+  console.log("Generating favicon set from public/images/logo_s.png...");
 
   // Generate PNG favicons at different sizes
   const sizes = [
