@@ -9,7 +9,10 @@ import bcrypt from "bcryptjs";
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
+  session: { 
+    strategy: "jwt",
+    maxAge: 10 * 24 * 60 * 60, // 10 days in seconds
+  },
   providers: [
     Credentials({
       async authorize(credentials) {
