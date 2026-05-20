@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState, useTransition } from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
@@ -137,9 +138,9 @@ function BookingForm() {
             >
               Submit Another Request
             </button>
-            <a href="/" className="btn-outline">
+            <Link href="/" className="btn-outline">
               Return to Homepage
-            </a>
+            </Link>
           </div>
         </div>
       </motion.div>
