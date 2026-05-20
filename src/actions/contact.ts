@@ -4,6 +4,8 @@ import prisma from "@/lib/prisma";
 import { contactSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
 
+import { sendAdminInquiryNotification } from "./booking";
+
 export interface ContactResponse {
   success: boolean;
   message: string;
@@ -22,9 +24,16 @@ export async function submitContactForm(formData: unknown): Promise<ContactRespo
         phone: validatedData.phone || null,
         subject: validatedData.subject || null,
         message: validatedData.message,
-        read: false,
+        status: "NEW",
       },
     });
+
+    // Trigger email notification placeholder
+    await sendAdminInquiryNotification(
+      validatedData.name,
+      validatedData.email,
+      validatedData.message
+    );
 
     revalidatePath("/admin/messages");
 

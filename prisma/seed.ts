@@ -533,7 +533,7 @@ async function main() {
         phone: "021-333-444",
         subject: "Weekly cleaning for Remuera house",
         message: "Hello, I am looking for a regular weekly cleaner for my 4 bedroom home. Please let me know your availability for weekly morning slots.",
-        read: false,
+        status: "NEW",
       },
       {
         name: "Liam O'Connor",
@@ -541,7 +541,7 @@ async function main() {
         phone: "027-112-233",
         subject: "Office cleaning quote request",
         message: "Hi there, we have a small 80 sqm office in Grey Lynn and need regular vacuuming and rubbish removal twice a week. Could you provide an estimate?",
-        read: true,
+        status: "READ",
       },
     ],
   });

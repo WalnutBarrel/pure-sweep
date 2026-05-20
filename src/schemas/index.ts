@@ -16,8 +16,8 @@ export const contactSchema = z.object({
 export const bookingSchema = z.object({
   serviceId: z.string().min(1, "Please select a service."),
   clientName: z.string().min(2, "Name must be at least 2 characters."),
-  clientEmail: z.string().email("Please enter a valid email address."),
-  clientPhone: z.string().min(8, "Please enter a valid New Zealand phone number."),
+  clientEmail: z.string().email("Please enter a valid email address.").optional().or(z.literal("")),
+  clientPhone: z.string().min(8, "Phone number must be at least 8 characters.").regex(/^(?:\+?64|0) ?[234679](?: ?\d){6,10}$/, "Please enter a valid New Zealand phone number (e.g., 021 123 4567)."),
   address: z.string().min(5, "Please enter a complete street address."),
   suburb: z.string().min(2, "Please enter an Auckland suburb."),
   preferredDate: z.string().min(1, "Please select a preferred date."),

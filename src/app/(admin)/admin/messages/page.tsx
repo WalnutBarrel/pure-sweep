@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { MessagesClient } from "./MessagesClient";
 import { SectionHeader } from "@/components/admin/DataTable";
+import { serialize } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ export default async function AdminMessagesPage() {
         description={`${messages.length} contact form submissions`}
       />
 
-      <MessagesClient messages={messages} />
+      <MessagesClient messages={serialize(messages)} />
     </div>
   );
 }

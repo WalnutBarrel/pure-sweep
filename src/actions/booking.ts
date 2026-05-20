@@ -18,31 +18,41 @@ export interface BookingResponse {
 }
 
 // ---------------------------------------------------------------------------
-// Placeholder: Admin notification
-// Replace this with your email service (Resend, SendGrid, etc.)
+// Placeholder email functions ready for Brevo/Resend/Nodemailer later
 // ---------------------------------------------------------------------------
-async function notifyAdmin(bookingRef: string, customerName: string, serviceName: string) {
+export async function sendAdminBookingNotification(
+  bookingRef: string,
+  customerName: string,
+  serviceName: string
+) {
   console.log(
-    `[ADMIN NOTIFICATION] New booking ${bookingRef} from ${customerName} for ${serviceName}. ` +
-    `Implement email delivery via Resend or SendGrid.`
+    `[ADMIN EMAIL] sendAdminBookingNotification: New booking ${bookingRef} created by ${customerName} for ${serviceName}.`
   );
 }
 
-// ---------------------------------------------------------------------------
-// Placeholder: Customer confirmation email
-// Replace this with your email service (Resend, SendGrid, etc.)
-// ---------------------------------------------------------------------------
-async function sendCustomerConfirmation(
+export async function sendCustomerBookingConfirmation(
   email: string,
   customerName: string,
   bookingRef: string,
   preferredDate: string,
-  preferredTime: string,
+  preferredTime: string
+) {
+  if (!email || email.includes("no-email-")) {
+    console.log(`[CUSTOMER EMAIL] sendCustomerBookingConfirmation: Skipped (no email provided for ${customerName}).`);
+    return;
+  }
+  console.log(
+    `[CUSTOMER EMAIL] sendCustomerBookingConfirmation: Confirmation sent to ${email} for booking ${bookingRef} scheduled on ${preferredDate} (${preferredTime}).`
+  );
+}
+
+export async function sendAdminInquiryNotification(
+  name: string,
+  email: string,
+  message: string
 ) {
   console.log(
-    `[CUSTOMER CONFIRMATION] Sending confirmation to ${email} for ${customerName}. ` +
-    `Booking: ${bookingRef}, Date: ${preferredDate}, Time: ${preferredTime}. ` +
-    `Implement email delivery via Resend or SendGrid.`
+    `[ADMIN EMAIL] sendAdminInquiryNotification: New inquiry from ${name} (${email}). Message snippet: "${message.substring(0, 60)}..."`
   );
 }
 
@@ -79,22 +89,32 @@ export async function createBooking(formData: unknown): Promise<BookingResponse>
     );
 
     // 1. Find or create Customer profile
-    let customer = await prisma.customer.findUnique({
-      where: { email: validatedData.clientEmail },
+    // Generate a unique fallback email if none was provided
+    const cleanPhoneForEmail = validatedData.clientPhone.replace(/[^0-9]/g, "");
+    const emailToUse = validatedData.clientEmail?.trim() || `no-email-${cleanPhoneForEmail}@puresweep.co.nz`;
+
+    // Search by email first, then fallback to searching by phone to avoid duplicates
+    let customer = await prisma.customer.findFirst({
+      where: {
+        OR: [
+          validatedData.clientEmail ? { email: validatedData.clientEmail } : undefined,
+          { phone: validatedData.clientPhone }
+        ].filter(Boolean) as any
+      }
     });
 
     if (!customer) {
       customer = await prisma.customer.create({
         data: {
           name: validatedData.clientName,
-          email: validatedData.clientEmail,
+          email: emailToUse,
           phone: validatedData.clientPhone,
           address: validatedData.address,
           suburb: validatedData.suburb || null,
         },
       });
     } else {
-      // Update customer details if they have changed
+      // Update customer details if they have changed, keeping their email
       await prisma.customer.update({
         where: { id: customer.id },
         data: {
@@ -102,6 +122,10 @@ export async function createBooking(formData: unknown): Promise<BookingResponse>
           phone: validatedData.clientPhone,
           address: validatedData.address,
           suburb: validatedData.suburb || null,
+          // Only update email if it was previously a placeholder and the user provided a real one now
+          email: (customer.email.includes("no-email-") && validatedData.clientEmail) 
+            ? validatedData.clientEmail 
+            : customer.email,
         },
       });
     }
@@ -160,13 +184,13 @@ export async function createBooking(formData: unknown): Promise<BookingResponse>
     }
 
     // 6. Trigger notification placeholders
-    await notifyAdmin(bookingRef, validatedData.clientName, serviceName);
-    await sendCustomerConfirmation(
-      validatedData.clientEmail,
+    await sendAdminBookingNotification(bookingRef, validatedData.clientName, serviceName);
+    await sendCustomerBookingConfirmation(
+      validatedData.clientEmail || "",
       validatedData.clientName,
       bookingRef,
       validatedData.preferredDate,
-      validatedData.preferredTime,
+      validatedData.preferredTime
     );
 
     revalidatePath("/admin/bookings");

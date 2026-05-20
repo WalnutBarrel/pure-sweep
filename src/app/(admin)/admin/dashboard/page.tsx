@@ -9,6 +9,12 @@ export const dynamic = "force-dynamic";
 const GST_RATE = 0.15;
 
 export default async function AdminDashboardPage() {
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  
+  const endOfToday = new Date();
+  endOfToday.setHours(23, 59, 59, 999);
+
   // Fetch all metrics in parallel
   const [
     revenueAgg,
@@ -17,13 +23,14 @@ export default async function AdminDashboardPage() {
     bookingsTotal,
     bookingsCompleted,
     bookingsPending,
-    bookingsUpcoming,
+    bookingsToday,
+    inquiriesNewCount,
     customersTotal,
     invoicesPending,
     recentBookings,
     recentInvoices,
     recentExpenses,
-    recentCustomers,
+    recentInquiries,
     bookingsByService,
     allBookings,
     allExpenses,
@@ -36,7 +43,15 @@ export default async function AdminDashboardPage() {
     prisma.booking.count().catch(() => 0),
     prisma.booking.count({ where: { status: "COMPLETED" } }).catch(() => 0),
     prisma.booking.count({ where: { status: "PENDING" } }).catch(() => 0),
-    prisma.booking.count({ where: { status: { in: ["CONFIRMED", "IN_PROGRESS"] } } }).catch(() => 0),
+    prisma.booking.count({
+      where: {
+        preferredDate: {
+          gte: startOfToday,
+          lte: endOfToday,
+        },
+      },
+    }).catch(() => 0),
+    prisma.contactMessage.count({ where: { status: "NEW" } }).catch(() => 0),
     prisma.customer.count().catch(() => 0),
     prisma.invoice.count({ where: { status: "UNPAID" } }).catch(() => 0),
     prisma.booking.findMany({
@@ -53,7 +68,7 @@ export default async function AdminDashboardPage() {
       orderBy: { date: "desc" },
       take: 5,
     }).catch(() => []),
-    prisma.customer.findMany({
+    prisma.contactMessage.findMany({
       orderBy: { createdAt: "desc" },
       take: 5,
     }).catch(() => []),
@@ -140,7 +155,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-6 animate-enter-fade">
-      {/* Stat Cards */}
+      {/* Stat Cards Row 1 */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <StatCard label="Total Revenue" value={formatPrice(totalRevenue)} />
         <StatCard label="Total Expenses" value={formatPrice(totalExpenses)} />
@@ -153,12 +168,13 @@ export default async function AdminDashboardPage() {
         <StatCard label="Pending Invoices" value={String(invoicesPending)} />
       </div>
 
+      {/* Stat Cards Row 2 */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <StatCard label="Total Bookings" value={String(bookingsTotal)} />
-        <StatCard label="Completed" value={String(bookingsCompleted)} />
-        <StatCard label="Upcoming Jobs" value={String(bookingsUpcoming)} />
-        <StatCard label="New Customers" value={String(customersTotal)} />
+        <StatCard label="Completed Jobs" value={String(bookingsCompleted)} />
+        <StatCard label="Today's Bookings" value={String(bookingsToday)} />
         <StatCard label="Pending Bookings" value={String(bookingsPending)} />
+        <StatCard label="New Inquiries" value={String(inquiriesNewCount)} />
       </div>
 
       {/* Charts */}
@@ -174,7 +190,7 @@ export default async function AdminDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Recent Bookings */}
         <div className="space-y-3">
-          <h3 className="text-[13px] font-semibold text-stone-500 uppercase tracking-wider">Recent Bookings</h3>
+          <h3 className="text-[13px] font-semibold text-stone-500 uppercase tracking-wider font-sans">Recent Bookings</h3>
           <DataTable columns={["Client", "Service", "Total", "Status"]}>
             {recentBookings.map((b) => (
               <tr key={b.id} className="hover:bg-stone-50/50">
@@ -196,9 +212,50 @@ export default async function AdminDashboardPage() {
           </DataTable>
         </div>
 
+        {/* Recent Inquiries */}
+        <div className="space-y-3">
+          <h3 className="text-[13px] font-semibold text-stone-500 uppercase tracking-wider font-sans">Recent Contact Inquiries</h3>
+          <DataTable columns={["Sender", "Subject", "Status", "Submitted"]}>
+            {recentInquiries.map((inq) => (
+              <tr key={inq.id} className="hover:bg-stone-50/50">
+                <td className="px-4 py-3">
+                  <p className="font-medium text-stone-800 text-[13px]">{inq.name}</p>
+                  <p className="text-[11px] text-stone-400">{inq.email}</p>
+                </td>
+                <td className="px-4 py-3 text-[13px] max-w-[180px] truncate">
+                  {inq.subject || "No Subject"}
+                </td>
+                <td className="px-4 py-3">
+                  <span className={`text-[9px] font-bold px-2 py-0.5 uppercase tracking-widest border ${
+                    inq.status === "NEW" 
+                      ? "bg-stone-900 text-stone-50 border-stone-950" 
+                      : inq.status === "REPLIED" 
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
+                      : inq.status === "READ" 
+                      ? "bg-stone-100 text-stone-700 border-stone-200" 
+                      : "bg-stone-50 text-stone-400 border-stone-200/50"
+                  }`}>
+                    {inq.status}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-[12px] text-stone-500">
+                  {new Date(inq.createdAt).toLocaleDateString("en-NZ", { dateStyle: "medium" })}
+                </td>
+              </tr>
+            ))}
+            {recentInquiries.length === 0 && (
+              <tr>
+                <td colSpan={4} className="px-4 py-8 text-center text-[12px] text-stone-400">
+                  No recent inquiries submitted.
+                </td>
+              </tr>
+            )}
+          </DataTable>
+        </div>
+
         {/* Recent Invoices */}
         <div className="space-y-3">
-          <h3 className="text-[13px] font-semibold text-stone-500 uppercase tracking-wider">Recent Invoices</h3>
+          <h3 className="text-[13px] font-semibold text-stone-500 uppercase tracking-wider font-sans">Recent Invoices</h3>
           <DataTable columns={["Invoice", "Customer", "Amount", "Status"]}>
             {recentInvoices.map((inv) => (
               <tr key={inv.id} className="hover:bg-stone-50/50">
@@ -215,7 +272,7 @@ export default async function AdminDashboardPage() {
 
         {/* Recent Expenses */}
         <div className="space-y-3">
-          <h3 className="text-[13px] font-semibold text-stone-500 uppercase tracking-wider">Recent Expenses</h3>
+          <h3 className="text-[13px] font-semibold text-stone-500 uppercase tracking-wider font-sans">Recent Expenses</h3>
           <DataTable columns={["Description", "Category", "Amount", "Date"]}>
             {recentExpenses.map((exp) => (
               <tr key={exp.id} className="hover:bg-stone-50/50">
@@ -224,23 +281,6 @@ export default async function AdminDashboardPage() {
                 <td className="px-4 py-3 font-mono text-[13px] text-stone-700">{formatPrice(Number(exp.amount))}</td>
                 <td className="px-4 py-3 text-[12px] text-stone-500">
                   {new Date(exp.date).toLocaleDateString("en-NZ", { dateStyle: "medium" })}
-                </td>
-              </tr>
-            ))}
-          </DataTable>
-        </div>
-
-        {/* Recent Customers */}
-        <div className="space-y-3">
-          <h3 className="text-[13px] font-semibold text-stone-500 uppercase tracking-wider">Recent Customers</h3>
-          <DataTable columns={["Name", "Email", "Suburb", "Joined"]}>
-            {recentCustomers.map((cust) => (
-              <tr key={cust.id} className="hover:bg-stone-50/50">
-                <td className="px-4 py-3 font-medium text-[13px] text-stone-800">{cust.name}</td>
-                <td className="px-4 py-3 text-[13px]">{cust.email}</td>
-                <td className="px-4 py-3 text-[13px] text-stone-500">{cust.suburb || "—"}</td>
-                <td className="px-4 py-3 text-[12px] text-stone-500">
-                  {new Date(cust.createdAt).toLocaleDateString("en-NZ", { dateStyle: "medium" })}
                 </td>
               </tr>
             ))}

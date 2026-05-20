@@ -735,14 +735,16 @@ export async function updateSetting(key: string, value: string, description?: st
 // ============================================================================
 // 11. INQUIRIES / CONTACT MESSAGES
 // ============================================================================
-export async function updateContactMessageStatus(id: string, read: boolean) {
+import { MessageStatus } from "@prisma/client";
+
+export async function updateContactMessageStatus(id: string, status: MessageStatus) {
   try {
     const message = await prisma.contactMessage.update({
       where: { id },
-      data: { read },
+      data: { status },
     });
 
-    await logActivity("UPDATE_INQUIRY", `Marked contact message from "${message.name}" as ${read ? "read" : "unread"}`);
+    await logActivity("UPDATE_INQUIRY", `Marked contact message from "${message.name}" as status: ${status}`);
     revalidatePath("/admin/messages");
     return { success: true, message };
   } catch (error: any) {
