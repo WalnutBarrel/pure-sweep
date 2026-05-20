@@ -5,12 +5,12 @@ import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
-const source = join(root, "logo_s.jpg");
 const publicDir = join(root, "public");
+const source = join(publicDir, "images", "logo_c.png");
 const appDir = join(root, "src", "app");
 
 async function generateFavicons() {
-  console.log("Generating favicon set from logo_s.jpg...");
+  console.log("Generating favicon set from public/images/logo_c.png...");
 
   // Generate PNG favicons at different sizes
   const sizes = [
@@ -40,8 +40,8 @@ async function generateFavicons() {
   writeFileSync(join(appDir, "favicon.ico"), ico32);
   console.log("  Created src/app/favicon.ico (32x32 PNG)");
 
-  // Generate OG image from the primary horizontal logo
-  const primarySource = join(root, "logo_c.jpg");
+  // Generate OG image from the logo_c.png
+  const primarySource = source;
   await sharp(primarySource)
     .resize(1200, 630, { fit: "contain", background: { r: 240, g: 245, b: 249, alpha: 1 } })
     .png({ quality: 90 })
