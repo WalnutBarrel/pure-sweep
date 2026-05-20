@@ -40,10 +40,6 @@ async function generateFavicons() {
   writeFileSync(join(appDir, "favicon.ico"), ico32);
   console.log("  Created src/app/favicon.ico (32x32 PNG)");
 
-  // Also create a proper ICO in public for direct access
-  writeFileSync(join(publicDir, "favicon.ico"), ico32);
-  console.log("  Created public/favicon.ico (32x32 PNG)");
-
   // Generate OG image from the primary horizontal logo
   const primarySource = join(root, "logo_c.jpg");
   await sharp(primarySource)
