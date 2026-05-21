@@ -4,12 +4,14 @@ import prisma from "@/lib/prisma";
 import { bookingSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
 import { calculateTotalPrice } from "@/lib/pricing";
+import { sendEmail } from "@/lib/email";
 
 export interface BookingResponse {
   success: boolean;
   message: string;
   bookingRef?: string;
   bookingId?: string;
+  contactPhone?: string;
   priceDetails?: {
     basePrice: number;
     gst: number;
@@ -25,9 +27,49 @@ export async function sendAdminBookingNotification(
   customerName: string,
   serviceName: string
 ) {
-  console.log(
-    `[ADMIN EMAIL] sendAdminBookingNotification: New booking ${bookingRef} created by ${customerName} for ${serviceName}.`
-  );
+  // Fetch admin email from settings
+  const emailSetting = await prisma.setting.findUnique({ where: { key: "contact_email" } });
+  const adminEmail = emailSetting?.value || "contact.puresweep@gmail.com";
+
+  await sendEmail({
+    to: adminEmail,
+    subject: `[BOOKING] New Request: ${bookingRef} - ${serviceName}`,
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #fafaf9; padding: 40px 20px; color: #1c1917;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e7e5e4; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+          <div style="background-color: #1c1917; padding: 30px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 400; letter-spacing: 2px; text-transform: uppercase;">PureSweep</h1>
+          </div>
+          <div style="padding: 40px 30px;">
+            <div style="margin-bottom: 20px;">
+              <span style="background-color: #dcfce7; color: #166534; padding: 6px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">NEW BOOKING</span>
+            </div>
+            <h2 style="margin-top: 0; color: #1c1917; font-size: 20px; font-weight: 500;">New Booking Received</h2>
+            <p style="color: #57534e; font-size: 15px; line-height: 1.6;">A new booking request has been submitted through the website.</p>
+            
+            <table style="width: 100%; margin: 30px 0; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f4; color: #78716c; font-size: 14px; width: 30%;">Reference</td>
+                <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f4; color: #1c1917; font-size: 15px; font-weight: 500;">${bookingRef}</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f4; color: #78716c; font-size: 14px;">Customer</td>
+                <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f4; color: #1c1917; font-size: 15px; font-weight: 500;">${customerName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f4; color: #78716c; font-size: 14px;">Service</td>
+                <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f4; color: #1c1917; font-size: 15px; font-weight: 500;">${serviceName}</td>
+              </tr>
+            </table>
+
+            <div style="text-align: center; margin-top: 40px;">
+              <a href="https://puresweep.co.nz/admin/bookings" style="background-color: #1c1917; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 4px; font-size: 14px; font-weight: 500; letter-spacing: 1px; display: inline-block;">VIEW IN DASHBOARD</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+  });
 }
 
 export async function sendCustomerBookingConfirmation(
@@ -38,12 +80,42 @@ export async function sendCustomerBookingConfirmation(
   preferredTime: string
 ) {
   if (!email || email.includes("no-email-")) {
-    console.log(`[CUSTOMER EMAIL] sendCustomerBookingConfirmation: Skipped (no email provided for ${customerName}).`);
     return;
   }
-  console.log(
-    `[CUSTOMER EMAIL] sendCustomerBookingConfirmation: Confirmation sent to ${email} for booking ${bookingRef} scheduled on ${preferredDate} (${preferredTime}).`
-  );
+
+  await sendEmail({
+    to: email,
+    subject: `[PureSweep] Booking Request Received - ${bookingRef}`,
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #fafaf9; padding: 40px 20px; color: #1c1917;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e7e5e4; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+          <div style="background-color: #1c1917; padding: 30px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 400; letter-spacing: 2px; text-transform: uppercase;">PureSweep</h1>
+          </div>
+          <div style="padding: 40px 30px;">
+            <div style="margin-bottom: 20px;">
+              <span style="background-color: #f3f4f6; color: #4b5563; padding: 6px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">BOOKING CONFIRMATION</span>
+            </div>
+            <h2 style="margin-top: 0; color: #1c1917; font-size: 20px; font-weight: 500;">Thank you for choosing PureSweep!</h2>
+            <p style="color: #57534e; font-size: 15px; line-height: 1.6;">Hi ${customerName},</p>
+            <p style="color: #57534e; font-size: 15px; line-height: 1.6;">We've successfully received your booking request. Our team is currently reviewing your details and will be in touch shortly to confirm your booking and arrange access.</p>
+            
+            <div style="background-color: #f5f5f4; padding: 20px; border-radius: 6px; margin: 30px 0;">
+              <p style="margin: 0 0 10px 0; color: #78716c; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Request Details</p>
+              <p style="margin: 0 0 5px 0; font-size: 15px;"><strong>Reference:</strong> ${bookingRef}</p>
+              <p style="margin: 0 0 5px 0; font-size: 15px;"><strong>Date:</strong> ${preferredDate}</p>
+              <p style="margin: 0; font-size: 15px;"><strong>Time:</strong> ${preferredTime}</p>
+            </div>
+
+            <p style="color: #57534e; font-size: 15px; line-height: 1.6; margin-top: 30px;">Best regards,<br/><strong>The PureSweep Team</strong></p>
+            <p style="margin-top: 40px; text-align: center; font-size: 13px; color: #a8a29e;">
+              <a href="https://puresweep.co.nz" style="color: #78716c; text-decoration: none;">puresweep.co.nz</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    `,
+  });
 }
 
 export async function sendAdminInquiryNotification(
@@ -51,9 +123,49 @@ export async function sendAdminInquiryNotification(
   email: string,
   message: string
 ) {
-  console.log(
-    `[ADMIN EMAIL] sendAdminInquiryNotification: New inquiry from ${name} (${email}). Message snippet: "${message.substring(0, 60)}..."`
-  );
+  const emailSetting = await prisma.setting.findUnique({ where: { key: "contact_email" } });
+  const adminEmail = emailSetting?.value || "contact.puresweep@gmail.com";
+
+  await sendEmail({
+    to: adminEmail,
+    subject: `[INQUIRY] New Contact Message from ${name}`,
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #fafaf9; padding: 40px 20px; color: #1c1917;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e7e5e4; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+          <div style="background-color: #1c1917; padding: 30px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 400; letter-spacing: 2px; text-transform: uppercase;">PureSweep</h1>
+          </div>
+          <div style="padding: 40px 30px;">
+            <div style="margin-bottom: 20px;">
+              <span style="background-color: #e0e7ff; color: #3730a3; padding: 6px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">NEW INQUIRY</span>
+            </div>
+            <h2 style="margin-top: 0; color: #1c1917; font-size: 20px; font-weight: 500;">New Contact Inquiry</h2>
+            
+            <table style="width: 100%; margin: 30px 0; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f4; color: #78716c; font-size: 14px; width: 20%;">Name</td>
+                <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f4; color: #1c1917; font-size: 15px; font-weight: 500;">${name}</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f4; color: #78716c; font-size: 14px;">Email</td>
+                <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f4; color: #1c1917; font-size: 15px; font-weight: 500;">
+                  <a href="mailto:${email}" style="color: #1c1917; text-decoration: underline;">${email}</a>
+                </td>
+              </tr>
+            </table>
+
+            <div style="background-color: #f5f5f4; padding: 24px; border-radius: 6px; margin: 30px 0;">
+              <p style="margin: 0; color: #57534e; font-size: 15px; line-height: 1.6; white-space: pre-wrap;">${message}</p>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+              <a href="https://puresweep.co.nz/admin/messages" style="background-color: #1c1917; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 4px; font-size: 14px; font-weight: 500; letter-spacing: 1px; display: inline-block;">VIEW INBOX</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+  });
 }
 
 export async function createBooking(formData: unknown): Promise<BookingResponse> {
@@ -196,12 +308,17 @@ export async function createBooking(formData: unknown): Promise<BookingResponse>
     revalidatePath("/admin/bookings");
     revalidatePath("/admin/dashboard");
 
+    // Fetch contact phone from settings
+    const phoneSetting = await prisma.setting.findUnique({ where: { key: "contact_phone" } });
+    const contactPhone = phoneSetting?.value || "642102699956";
+
     return {
       success: true,
       message: "Your booking request has been submitted successfully.",
       bookingRef,
       bookingId: booking.id,
       priceDetails,
+      contactPhone,
     };
   } catch (error) {
     console.error("Booking Server Action Error:", error);
@@ -227,6 +344,7 @@ export async function createBooking(formData: unknown): Promise<BookingResponse>
         (rawData?.bathrooms as number) || 1,
         (rawData?.extraServices as string[]) || []
       ),
+      contactPhone: "642102699956",
     };
   }
 }

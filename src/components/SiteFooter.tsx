@@ -1,8 +1,20 @@
 import Link from "next/link";
 import Container from "./Container";
+import prisma from "@/lib/prisma";
+import LogoNavbar from "./LogoNavbar";
 
-export default function SiteFooter() {
+export default async function SiteFooter() {
   const currentYear = new Date().getFullYear();
+  let emailSetting, phoneSetting;
+  try {
+    emailSetting = await prisma.setting.findUnique({ where: { key: "contact_email" } });
+    phoneSetting = await prisma.setting.findUnique({ where: { key: "contact_phone" } });
+  } catch (err) {
+    console.warn("Could not fetch settings for SiteFooter, falling back to defaults.");
+  }
+  
+  const contactEmail = emailSetting?.value || "contact.puresweep@gmail.com";
+  const contactPhone = phoneSetting?.value || "021-026999-56";
 
   return (
     <footer className="bg-[#1C2422] text-[#E5E0D8] border-t border-[#2D3835] pt-20 pb-12 font-sans">
@@ -12,9 +24,9 @@ export default function SiteFooter() {
           <div className="space-y-4">
             <Link href="/" className="flex items-center select-none">
               <img 
-                src="/images/logo_c.png" 
+                src="/images/logo_transparent.png" 
                 alt="PureSweep Cleaning" 
-                className="h-11 w-auto object-contain" 
+                className="h-16 w-auto object-contain" 
               />
             </Link>
             <p className="text-xs text-[#B2ABA0] leading-relaxed max-w-xs">
@@ -62,8 +74,8 @@ export default function SiteFooter() {
                 Auckland, New Zealand
               </p>
               <p>
-                Email: <span className="text-white hover:text-accent transition-colors">contact.puresweep@gmail.com</span><br />
-                Phone: <span className="text-white hover:text-accent transition-colors">021-026999-56</span>
+                Email: <span className="text-white hover:text-accent transition-colors">{contactEmail}</span><br />
+                Phone: <span className="text-white hover:text-accent transition-colors">{contactPhone}</span>
               </p>
             </div>
           </div>

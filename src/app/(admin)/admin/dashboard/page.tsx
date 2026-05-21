@@ -195,8 +195,8 @@ export default async function AdminDashboardPage() {
             {recentBookings.map((b) => (
               <tr key={b.id} className="hover:bg-stone-50/50">
                 <td className="px-4 py-3">
-                  <p className="font-medium text-stone-800 text-[13px]">{b.customer.name}</p>
-                  <p className="text-[11px] text-stone-400">{b.customer.email}</p>
+                  <p className="font-medium text-stone-800 text-[13px]">{b.customer?.name || "Unknown Customer"}</p>
+                  <p className="text-[11px] text-stone-400">{b.customer?.email || "No Email"}</p>
                 </td>
                 <td className="px-4 py-3 text-[13px]">
                   {b.bookingItems.map((i) => i.serviceName).join(", ") || "Service"}
@@ -260,7 +260,7 @@ export default async function AdminDashboardPage() {
             {recentInvoices.map((inv) => (
               <tr key={inv.id} className="hover:bg-stone-50/50">
                 <td className="px-4 py-3 font-mono text-[13px] text-stone-700">{inv.invoiceNumber}</td>
-                <td className="px-4 py-3 text-[13px]">{inv.customer.name}</td>
+                <td className="px-4 py-3 text-[13px]">{inv.customer?.name || "Unknown Customer"}</td>
                 <td className="px-4 py-3 font-mono text-[13px] text-stone-700">{formatPrice(Number(inv.totalAmount))}</td>
                 <td className="px-4 py-3">
                   <StatusBadge status={inv.status} variant="payment" />

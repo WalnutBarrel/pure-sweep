@@ -42,6 +42,7 @@ function BookingForm() {
     clientName: string;
     serviceId: string;
     preferredDate: string;
+    contactPhone?: string;
   } | null>(null);
 
   const searchParams = useSearchParams();
@@ -103,6 +104,7 @@ function BookingForm() {
           clientName: data.clientName,
           serviceId: data.serviceId,
           preferredDate: data.preferredDate,
+          contactPhone: response.contactPhone,
         });
         setSubmitted(true);
         reset();
@@ -115,7 +117,16 @@ function BookingForm() {
   // WhatsApp generation
   const whatsappUrl = (() => {
     if (!submittedData || !bookingRef) return "";
-    const cleanPhone = "642102699956";
+    
+    // Use the dynamic contact phone returned from the server, strip non-numeric characters
+    const rawPhone = submittedData.contactPhone || "642102699956";
+    let cleanPhone = rawPhone.replace(/\D/g, "");
+    
+    // Ensure it starts with NZ country code if it doesn't already
+    if (cleanPhone.startsWith("0")) {
+      cleanPhone = "64" + cleanPhone.substring(1);
+    }
+
     const dateFormatted = new Date(submittedData.preferredDate).toLocaleDateString("en-NZ", { dateStyle: "medium" });
     const serviceName = serviceMap[submittedData.serviceId] || "Signature Cleaning Service";
     

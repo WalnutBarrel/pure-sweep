@@ -115,8 +115,8 @@ export function InvoicesClient({ invoices: initialInvoices, customers, bookings 
   };
 
   const filteredInvoices = initialInvoices.filter((inv) => {
-    const number = inv.invoiceNumber.toLowerCase();
-    const customer = inv.customer.name.toLowerCase();
+    const number = inv.invoiceNumber?.toLowerCase() || "";
+    const customer = inv.customer?.name?.toLowerCase() || "";
     const query = search.toLowerCase();
 
     const matchesSearch = number.includes(query) || customer.includes(query);
@@ -183,8 +183,8 @@ export function InvoicesClient({ invoices: initialInvoices, customers, bookings 
               {inv.invoiceNumber}
             </td>
             <td className="px-4 py-3">
-              <p className="font-semibold text-stone-800 text-[13px]">{inv.customer.name}</p>
-              <p className="text-[11px] text-stone-400">Ref: {inv.booking.bookingRef}</p>
+              <p className="font-semibold text-stone-800 text-[13px]">{inv.customer?.name || "Unknown Customer"}</p>
+              <p className="text-[11px] text-stone-400">Ref: {inv.booking?.bookingRef || "N/A"}</p>
             </td>
             <td className="px-4 py-3 text-[12px] text-stone-500">
               {new Date(inv.issueDate).toLocaleDateString("en-NZ", { dateStyle: "medium" })}

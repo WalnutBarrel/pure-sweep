@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Container from "./Container";
+import LogoNavbar from "./LogoNavbar";
 import { Menu, X } from "lucide-react";
 
 export default function SiteHeader() {
@@ -23,12 +24,9 @@ export default function SiteHeader() {
         <div className="flex h-20 items-center justify-between">
           {/* Brand Logo */}
           <Link href="/" className="group flex items-center">
-            <img 
-              src="/images/logo_c.png" 
-              alt="PureSweep Cleaning" 
-              className="h-10 w-auto object-contain" 
-            />
+            <LogoNavbar className="h-10 md:h-12" />
           </Link>
+
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-8">
@@ -38,9 +36,8 @@ export default function SiteHeader() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`text-xs font-semibold uppercase tracking-widest transition-colors duration-hover ${
-                    isActive ? "text-primary border-b border-primary pb-1" : "text-muted-text hover:text-primary"
-                  }`}
+                  className={`text-xs font-semibold uppercase tracking-widest transition-colors duration-hover ${isActive ? "text-primary border-b border-primary pb-1" : "text-muted-text hover:text-primary"
+                    }`}
                 >
                   {link.name}
                 </Link>
@@ -77,9 +74,8 @@ export default function SiteHeader() {
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className={`text-xs font-semibold uppercase tracking-widest py-2 transition-colors ${
-                    isActive ? "text-primary pl-2 border-l border-primary" : "text-muted-text"
-                  }`}
+                  className={`text-xs font-semibold uppercase tracking-widest py-2 transition-colors ${isActive ? "text-primary pl-2 border-l border-primary" : "text-muted-text"
+                    }`}
                 >
                   {link.name}
                 </Link>

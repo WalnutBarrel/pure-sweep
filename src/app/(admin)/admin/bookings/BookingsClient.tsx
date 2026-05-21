@@ -185,9 +185,9 @@ export function BookingsClient({ bookings: initialBookings, customers, staff, se
 
   // Filter & Search Logic
   const filteredBookings = initialBookings.filter((b) => {
-    const customerName = b.customer.name.toLowerCase();
-    const customerEmail = b.customer.email.toLowerCase();
-    const ref = b.bookingRef.toLowerCase();
+    const customerName = b.customer?.name?.toLowerCase() || "";
+    const customerEmail = b.customer?.email?.toLowerCase() || "";
+    const ref = b.bookingRef?.toLowerCase() || "";
     const query = search.toLowerCase();
 
     const matchesSearch = customerName.includes(query) || customerEmail.includes(query) || ref.includes(query);
@@ -256,8 +256,8 @@ export function BookingsClient({ bookings: initialBookings, customers, staff, se
               {b.bookingRef}
             </td>
             <td className="px-4 py-3">
-              <p className="font-medium text-stone-800 text-[13px]">{b.customer.name}</p>
-              <p className="text-[11px] text-stone-400">{b.customer.email}</p>
+              <p className="font-medium text-stone-800 text-[13px]">{b.customer?.name || "Unknown Customer"}</p>
+              <p className="text-[11px] text-stone-400">{b.customer?.email || "No Email"}</p>
             </td>
             <td className="px-4 py-3 text-[13px]">
               <p className="text-stone-800">{b.bookingItems?.[0]?.serviceName || "Signature Clean"}</p>

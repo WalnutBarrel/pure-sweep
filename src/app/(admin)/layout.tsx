@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { signOut } from "next-auth/react";
 import {
   LayoutDashboard,
   CalendarCheck,
@@ -16,12 +17,14 @@ import {
   LogOut,
   ExternalLink,
   DollarSign,
+  Mail,
 } from "lucide-react";
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/bookings", label: "Bookings", icon: CalendarCheck },
   { href: "/admin/customers", label: "Customers", icon: Users },
+  { href: "/admin/messages", label: "Inbox", icon: Mail },
   { href: "/admin/services", label: "Services", icon: Wrench },
   { href: "/admin/invoices", label: "Invoices", icon: Receipt },
   { href: "/admin/expenses", label: "Expenses", icon: DollarSign },
@@ -76,15 +79,13 @@ function SidebarContent({ pathname, onClose }: { pathname: string; onClose?: () 
           <ExternalLink className="h-3.5 w-3.5" strokeWidth={1.5} />
           Public Website
         </Link>
-        <form action="/api/auth/signout" method="POST">
-          <button
-            type="submit"
-            className="flex items-center gap-2 px-3 py-2 text-[12px] text-stone-500 hover:text-stone-300 transition-colors w-full text-left cursor-pointer"
-          >
-            <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
-            Sign Out
-          </button>
-        </form>
+        <button
+          onClick={() => signOut({ callbackUrl: "/login" })}
+          className="flex items-center gap-2 px-3 py-2 text-[12px] text-stone-500 hover:text-stone-300 transition-colors w-full text-left cursor-pointer"
+        >
+          <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
+          Sign Out
+        </button>
       </div>
     </>
   );

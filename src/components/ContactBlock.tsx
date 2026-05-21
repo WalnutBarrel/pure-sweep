@@ -1,6 +1,17 @@
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import prisma from "@/lib/prisma";
+export default async function ContactBlock() {
+  let emailSetting, phoneSetting;
+  try {
+    emailSetting = await prisma.setting.findUnique({ where: { key: "contact_email" } });
+    phoneSetting = await prisma.setting.findUnique({ where: { key: "contact_phone" } });
+  } catch (err) {
+    console.warn("Could not fetch settings for ContactBlock, falling back to defaults.");
+  }
+  
+  const contactEmail = emailSetting?.value || "contact.puresweep@gmail.com";
+  const contactPhone = phoneSetting?.value || "021-026999-56";
 
-export default function ContactBlock() {
   return (
     <div className="bg-surface border border-border p-8 md:p-10 space-y-8 font-sans">
       <div className="space-y-2 border-b border-border pb-6">
@@ -16,7 +27,7 @@ export default function ContactBlock() {
           </div>
           <div className="space-y-1">
             <h4 className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Direct Telephone</h4>
-            <p className="text-sm font-semibold text-stone-800">021-026999-56</p>
+            <p className="text-sm font-semibold text-stone-800">{contactPhone}</p>
           </div>
         </div>
 
@@ -27,7 +38,7 @@ export default function ContactBlock() {
           </div>
           <div className="space-y-1">
             <h4 className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Email Inquiry</h4>
-            <p className="text-sm font-semibold text-stone-800">contact.puresweep@gmail.com</p>
+            <p className="text-sm font-semibold text-stone-800">{contactEmail}</p>
           </div>
         </div>
 
