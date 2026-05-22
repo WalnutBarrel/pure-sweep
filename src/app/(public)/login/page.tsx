@@ -55,7 +55,7 @@ function LoginForm() {
       <div className="border border-border p-10 max-w-md w-full bg-stone-50/50 space-y-8">
         <div className="flex flex-col items-center text-center space-y-4">
           <img 
-            src="/images/logo_c.png" 
+            src="/images/puresweep-logo.png" 
             alt="PureSweep Cleaning" 
             className="h-16 w-auto object-contain" 
           />

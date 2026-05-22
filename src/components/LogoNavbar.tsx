@@ -23,7 +23,7 @@ export default function LogoNavbar({
     >
       {/* Logo badge */}
       <img
-        src="/images/puresweep-logo.jpeg"
+        src="/images/puresweep-logo.png"
         alt="PureSweep Cleaning"
         className="h-14 md:h-16 w-auto object-contain rounded-full"
       />

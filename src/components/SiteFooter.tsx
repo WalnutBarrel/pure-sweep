@@ -24,7 +24,7 @@ export default async function SiteFooter() {
           <div className="space-y-4">
             <Link href="/" className="flex items-center select-none">
               <img 
-                src="/images/logo_transparent.png" 
+                src="/images/puresweep-logo.png" 
                 alt="PureSweep Cleaning" 
                 className="h-16 w-auto object-contain" 
               />

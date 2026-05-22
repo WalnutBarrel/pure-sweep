@@ -39,7 +39,7 @@ function SidebarContent({ pathname, onClose }: { pathname: string; onClose?: () 
       <div className="h-[60px] border-b border-stone-800 flex items-center px-5 shrink-0">
         <Link href="/admin/dashboard" className="flex items-center gap-2" onClick={onClose}>
           <img 
-            src="/images/logo_c.png" 
+            src="/images/puresweep-logo.png" 
             alt="PureSweep Cleaning" 
             className="h-7 w-auto object-contain" 
           />
