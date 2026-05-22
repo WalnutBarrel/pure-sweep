@@ -767,6 +767,7 @@ export async function updateSetting(key: string, value: string, description?: st
 
     await logActivity("UPDATE_SETTING", `Configured setting "${key}" to "${value}"`);
     revalidatePath("/admin/settings");
+    revalidatePath("/", "layout"); // Revalidate entire site so footer updates instantly
     return { success: true, setting };
   } catch (error: any) {
     return { success: false, message: error.message || "Failed to update system settings." };
