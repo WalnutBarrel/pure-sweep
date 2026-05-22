@@ -18,7 +18,7 @@ export async function sendEmail({
 
   try {
     const data = await resend.emails.send({
-      from: "PureSweep Notifications <onboarding@resend.dev>",
+      from: "PureSweep Notifications <inquiries@puresweep.co.nz>",
       to,
       subject,
       html,
