@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { adminStaffSchema, adminTestimonialSchema } from "@/schemas";
@@ -35,6 +36,11 @@ export function SettingsClient({ settings, staff: initialStaff, testimonials: in
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const [activeTab, setActiveTab] = useState<"config" | "staff" | "testimonials" | "logs">("config");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Edit / Creation states
   const [configEditing, setConfigEditing] = useState<any>(null);
@@ -440,71 +446,91 @@ export function SettingsClient({ settings, staff: initialStaff, testimonials: in
         </DataTable>
       )}
 
-      {/* Slide-over Staff Form */}
-      {staffOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setStaffOpen(false)} />
-          <div className="relative bg-white border-l border-stone-200 w-full max-w-md h-full flex flex-col p-6 shadow-2xl animate-enter-fade">
-            <div className="flex justify-between items-center border-b border-stone-100 pb-4">
-              <h3 className="text-[15px] font-semibold text-stone-900">
+      {/* Centered Staff Modal Overlay using Portal */}
+      {staffOpen && mounted && createPortal(
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center bg-stone-900/40 p-4 sm:p-6 sm:items-center overflow-y-auto"
+          onClick={() => setStaffOpen(false)}
+        >
+          <div 
+            className="relative bg-white border border-stone-200 w-full max-w-4xl max-h-none sm:max-h-[90vh] flex flex-col shadow-2xl rounded-sm my-auto shrink-0"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center border-b border-stone-200 px-6 py-5 bg-white shrink-0">
+              <h3 className="text-[15px] font-sans font-bold uppercase tracking-wider text-stone-900">
                 {editingStaff ? "Modify Staff coordinates" : "Hire Staff / Cleaner"}
               </h3>
-              <button onClick={() => setStaffOpen(false)} className="text-stone-400 hover:text-stone-900 transition-colors">
+              <button onClick={() => setStaffOpen(false)} className="text-stone-400 hover:text-stone-900 transition-colors p-1.5">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <form onSubmit={staffForm.handleSubmit(onStaffSubmit)} className="flex-1 overflow-y-auto py-4 space-y-4 pr-1">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="form-label">First Name</label>
-                  <input type="text" {...staffForm.register("firstName")} className="form-input text-[13px]" placeholder="Liam" />
-                  {staffForm.formState.errors.firstName && <p className="text-xs text-red-600 mt-1">{staffForm.formState.errors.firstName.message}</p>}
+            {/* Scrollable Form Body */}
+            <form onSubmit={staffForm.handleSubmit(onStaffSubmit)} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto px-6 py-6 scrollbar-thin min-h-0">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-5">
+                  {/* Left Column */}
+                  <div className="space-y-5">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">First Name</label>
+                        <input type="text" {...staffForm.register("firstName")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" placeholder="Liam" />
+                        {staffForm.formState.errors.firstName && <p className="text-xs text-red-600 mt-1">{staffForm.formState.errors.firstName.message as string}</p>}
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Last Name</label>
+                        <input type="text" {...staffForm.register("lastName")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" placeholder="Cooper" />
+                        {staffForm.formState.errors.lastName && <p className="text-xs text-red-600 mt-1">{staffForm.formState.errors.lastName.message as string}</p>}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Email Address (Optional)</label>
+                      <input type="email" {...staffForm.register("email")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" placeholder="liam@puresweep.co.nz" />
+                      {staffForm.formState.errors.email && <p className="text-xs text-red-600 mt-1">{staffForm.formState.errors.email.message as string}</p>}
+                    </div>
+                  </div>
+
+                  {/* Right Column */}
+                  <div className="space-y-5">
+                    <div>
+                      <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Mobile Contact</label>
+                      <input type="text" {...staffForm.register("phone")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" placeholder="022-XXXX-XXXX" />
+                      {staffForm.formState.errors.phone && <p className="text-xs text-red-600 mt-1">{staffForm.formState.errors.phone.message as string}</p>}
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Hourly Compensation Rate ($)</label>
+                      <input type="number" {...staffForm.register("hourlyRate", { valueAsNumber: true })} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-mono transition-colors" />
+                      {staffForm.formState.errors.hourlyRate && <p className="text-xs text-red-600 mt-1">{staffForm.formState.errors.hourlyRate.message as string}</p>}
+                    </div>
+
+                    <div className="bg-[#FAF9F6] border border-[#DDD6CC] p-4 mt-2">
+                      <div className="flex items-center gap-3">
+                        <input type="checkbox" {...staffForm.register("isActive")} id="staffActive" className="h-4 w-4 rounded-sm border-stone-300 text-stone-900 focus:ring-0 cursor-pointer" />
+                        <label htmlFor="staffActive" className="text-[12px] font-semibold text-stone-700 cursor-pointer select-none">
+                          Staff listing active and schedulable
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label className="form-label">Last Name</label>
-                  <input type="text" {...staffForm.register("lastName")} className="form-input text-[13px]" placeholder="Cooper" />
-                  {staffForm.formState.errors.lastName && <p className="text-xs text-red-600 mt-1">{staffForm.formState.errors.lastName.message}</p>}
-                </div>
               </div>
 
-              <div>
-                <label className="form-label">Email Address (Optional)</label>
-                <input type="email" {...staffForm.register("email")} className="form-input text-[13px]" placeholder="liam@puresweep.co.nz" />
-                {staffForm.formState.errors.email && <p className="text-xs text-red-600 mt-1">{staffForm.formState.errors.email.message}</p>}
-              </div>
-
-              <div>
-                <label className="form-label">Mobile Contact</label>
-                <input type="text" {...staffForm.register("phone")} className="form-input text-[13px]" placeholder="022-XXXX-XXXX" />
-                {staffForm.formState.errors.phone && <p className="text-xs text-red-600 mt-1">{staffForm.formState.errors.phone.message}</p>}
-              </div>
-
-              <div>
-                <label className="form-label">Hourly Compensation Rate ($)</label>
-                <input type="number" {...staffForm.register("hourlyRate")} className="form-input text-[13px] font-mono" />
-                {staffForm.formState.errors.hourlyRate && <p className="text-xs text-red-600 mt-1">{staffForm.formState.errors.hourlyRate.message}</p>}
-              </div>
-
-              <div className="flex items-center gap-2 pt-2">
-                <input type="checkbox" {...staffForm.register("isActive")} id="staffActive" className="h-4 w-4 rounded-none border-stone-300 text-stone-900 focus:ring-0 cursor-pointer" />
-                <label htmlFor="staffActive" className="text-[12px] font-semibold text-stone-700 cursor-pointer select-none">
-                  Staff listing active and schedulable
-                </label>
-              </div>
-
-              <div className="pt-4 border-t border-stone-100 flex gap-2">
+              {/* Sticky Footer */}
+              <div className="border-t border-stone-200 px-6 py-4 bg-white shrink-0 flex flex-col sm:flex-row justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setStaffOpen(false)}
-                  className="flex-1 border border-stone-200 hover:bg-stone-50 text-stone-700 text-[12px] font-bold py-3 uppercase tracking-widest cursor-pointer text-center"
+                  className="w-full sm:w-auto h-11 border border-[#DDD6CC] hover:bg-stone-50 text-stone-700 text-[11px] font-bold px-6 uppercase tracking-widest transition-colors cursor-pointer flex items-center justify-center"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="flex-1 bg-stone-900 hover:bg-stone-800 text-white text-[12px] font-bold py-3 uppercase tracking-widest cursor-pointer text-center disabled:opacity-50"
+                  className="w-full sm:w-auto h-11 bg-stone-900 hover:bg-stone-850 text-white text-[11px] font-bold px-8 uppercase tracking-widest transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center"
                 >
                   {isPending ? "Saving..." : editingStaff ? "Update" : "Hire Staff"}
                 </button>
@@ -512,79 +538,99 @@ export function SettingsClient({ settings, staff: initialStaff, testimonials: in
             </form>
           </div>
         </div>
-      )}
+      , document.body)}
 
-      {/* Slide-over Testimonial Form */}
-      {testimonialOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setTestimonialOpen(false)} />
-          <div className="relative bg-white border-l border-stone-200 w-full max-w-md h-full flex flex-col p-6 shadow-2xl animate-enter-fade">
-            <div className="flex justify-between items-center border-b border-stone-100 pb-4">
-              <h3 className="text-[15px] font-semibold text-stone-900">
+      {/* Centered Testimonial Modal Overlay using Portal */}
+      {testimonialOpen && mounted && createPortal(
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center bg-stone-900/40 p-4 sm:p-6 sm:items-center overflow-y-auto"
+          onClick={() => setTestimonialOpen(false)}
+        >
+          <div 
+            className="relative bg-white border border-stone-200 w-full max-w-4xl max-h-none sm:max-h-[90vh] flex flex-col shadow-2xl rounded-sm my-auto shrink-0"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center border-b border-stone-200 px-6 py-5 bg-white shrink-0">
+              <h3 className="text-[15px] font-sans font-bold uppercase tracking-wider text-stone-900">
                 {editingTestimonial ? "Modify Review Statement" : "Add Customer Testimonial"}
               </h3>
-              <button onClick={() => setTestimonialOpen(false)} className="text-stone-400 hover:text-stone-900 transition-colors">
+              <button onClick={() => setTestimonialOpen(false)} className="text-stone-400 hover:text-stone-900 transition-colors p-1.5">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <form onSubmit={testimonialForm.handleSubmit(onTestimonialSubmit)} className="flex-1 overflow-y-auto py-4 space-y-4 pr-1">
-              <div>
-                <label className="form-label">Reviewer / Author Name</label>
-                <input type="text" {...testimonialForm.register("author")} className="form-input text-[13px]" placeholder="E.g. David Brown" />
-                {testimonialForm.formState.errors.author && <p className="text-xs text-red-600 mt-1">{testimonialForm.formState.errors.author.message}</p>}
-              </div>
+            {/* Scrollable Form Body */}
+            <form onSubmit={testimonialForm.handleSubmit(onTestimonialSubmit)} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto px-6 py-6 scrollbar-thin min-h-0">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-5">
+                  {/* Left Column */}
+                  <div className="space-y-5">
+                    <div>
+                      <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Reviewer / Author Name</label>
+                      <input type="text" {...testimonialForm.register("author")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" placeholder="E.g. David Brown" />
+                      {testimonialForm.formState.errors.author && <p className="text-xs text-red-600 mt-1">{testimonialForm.formState.errors.author.message as string}</p>}
+                    </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="form-label">Role / Occupation</label>
-                  <input type="text" {...testimonialForm.register("role")} className="form-input text-[13px]" placeholder="Home Owner" />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Role / Occupation</label>
+                        <input type="text" {...testimonialForm.register("role")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" placeholder="Home Owner" />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Location Suburb</label>
+                        <input type="text" {...testimonialForm.register("location")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" placeholder="Remuera" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column */}
+                  <div className="space-y-5">
+                    <div>
+                      <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Rating Score (1-5)</label>
+                      <select {...testimonialForm.register("rating", { valueAsNumber: true })} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors">
+                        <option value={5}>5 Stars Exceptional</option>
+                        <option value={4}>4 Stars Very Good</option>
+                        <option value={3}>3 Stars Satisfactory</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Review Quote / Statement</label>
+                      <textarea
+                        {...testimonialForm.register("quote")}
+                        rows={5}
+                        className="w-full border border-[#DDD6CC] bg-white rounded-none p-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans resize-none"
+                        placeholder="PureSweep cleaners are polite, details-oriented, and highly trustworthy..."
+                      />
+                      {testimonialForm.formState.errors.quote && <p className="text-xs text-red-600 mt-1">{testimonialForm.formState.errors.quote.message as string}</p>}
+                    </div>
+
+                    <div className="bg-[#FAF9F6] border border-[#DDD6CC] p-4 mt-2">
+                      <div className="flex items-center gap-3">
+                        <input type="checkbox" {...testimonialForm.register("isApproved")} id="isApproved" className="h-4 w-4 rounded-sm border-stone-300 text-stone-900 focus:ring-0 cursor-pointer" />
+                        <label htmlFor="isApproved" className="text-[12px] font-semibold text-stone-700 cursor-pointer select-none">
+                          Review approved and displayed on homepage
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label className="form-label">Location Suburb</label>
-                  <input type="text" {...testimonialForm.register("location")} className="form-input text-[13px]" placeholder="Remuera" />
-                </div>
               </div>
 
-              <div>
-                <label className="form-label">Rating Score (1-5)</label>
-                <select {...testimonialForm.register("rating")} className="form-select text-[13px]">
-                  <option value={5}>5 Stars Exceptional</option>
-                  <option value={4}>4 Stars Very Good</option>
-                  <option value={3}>3 Stars Satisfactory</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="form-label">Review Quote / Statement</label>
-                <textarea
-                  {...testimonialForm.register("quote")}
-                  rows={4}
-                  className="form-textarea text-[13px]"
-                  placeholder="PureSweep cleaners are polite, details-oriented, and highly trustworthy..."
-                />
-                {testimonialForm.formState.errors.quote && <p className="text-xs text-red-600 mt-1">{testimonialForm.formState.errors.quote.message}</p>}
-              </div>
-
-              <div className="flex items-center gap-2 pt-2">
-                <input type="checkbox" {...testimonialForm.register("isApproved")} id="isApproved" className="h-4 w-4 rounded-none border-stone-300 text-stone-900 focus:ring-0 cursor-pointer" />
-                <label htmlFor="isApproved" className="text-[12px] font-semibold text-stone-700 cursor-pointer select-none">
-                  Review approved and displayed on homepage
-                </label>
-              </div>
-
-              <div className="pt-4 border-t border-stone-100 flex gap-2">
+              {/* Sticky Footer */}
+              <div className="border-t border-stone-200 px-6 py-4 bg-white shrink-0 flex flex-col sm:flex-row justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setTestimonialOpen(false)}
-                  className="flex-1 border border-stone-200 hover:bg-stone-50 text-stone-700 text-[12px] font-bold py-3 uppercase tracking-widest cursor-pointer text-center"
+                  className="w-full sm:w-auto h-11 border border-[#DDD6CC] hover:bg-stone-50 text-stone-700 text-[11px] font-bold px-6 uppercase tracking-widest transition-colors cursor-pointer flex items-center justify-center"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="flex-1 bg-stone-900 hover:bg-stone-800 text-white text-[12px] font-bold py-3 uppercase tracking-widest cursor-pointer text-center disabled:opacity-50"
+                  className="w-full sm:w-auto h-11 bg-stone-900 hover:bg-stone-850 text-white text-[11px] font-bold px-8 uppercase tracking-widest transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center"
                 >
                   {isPending ? "Saving..." : editingTestimonial ? "Update" : "Add Review"}
                 </button>
@@ -592,7 +638,7 @@ export function SettingsClient({ settings, staff: initialStaff, testimonials: in
             </form>
           </div>
         </div>
-      )}
+      , document.body)}
 
       {/* Confirmation Safeguards */}
       {staffConfirmDelete && (

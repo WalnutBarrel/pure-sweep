@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { adminInvoiceSchema } from "@/schemas";
@@ -28,6 +29,11 @@ export function InvoicesClient({ invoices: initialInvoices, customers, bookings 
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [isOpen, setIsOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<any>(null);
@@ -256,152 +262,169 @@ export function InvoicesClient({ invoices: initialInvoices, customers, bookings 
         </div>
       )}
 
-      {/* Slide-over Form Overlay */}
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setIsOpen(false)} />
-          <div className="relative bg-white border-l border-stone-200 w-full max-w-md h-full flex flex-col p-6 shadow-2xl animate-enter-fade">
-            <div className="flex justify-between items-center border-b border-stone-100 pb-4">
-              <h3 className="text-[15px] font-semibold text-stone-900">
+      {/* Centered Modal Overlay using Portal */}
+      {isOpen && mounted && createPortal(
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center bg-stone-900/40 p-4 sm:p-6 sm:items-center overflow-y-auto"
+          onClick={() => setIsOpen(false)}
+        >
+          <div 
+            className="relative bg-white border border-stone-200 w-full max-w-4xl max-h-none sm:max-h-[90vh] flex flex-col shadow-2xl rounded-sm my-auto shrink-0"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center border-b border-stone-200 px-6 py-5 bg-white shrink-0">
+              <h3 className="text-[15px] font-sans font-bold uppercase tracking-wider text-stone-900">
                 {editingInvoice ? "Modify Generated Invoice" : "Generate Billing Invoice Statement"}
               </h3>
-              <button onClick={() => setIsOpen(false)} className="text-stone-400 hover:text-stone-900 transition-colors">
+              <button onClick={() => setIsOpen(false)} className="text-stone-400 hover:text-stone-900 transition-colors p-1.5">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-y-auto py-4 space-y-4 pr-1">
-              <div>
-                <label className="form-label">Client Customer Profile</label>
-                <select {...register("customerId")} className="form-select text-[13px]">
-                  {customers.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} ({c.email})
-                    </option>
-                  ))}
-                </select>
-                {errors.customerId && <p className="text-xs text-red-600 mt-1">{errors.customerId.message}</p>}
+            {/* Scrollable Form Body */}
+            <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto px-6 py-6 scrollbar-thin min-h-0">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-5">
+                  {/* Left Column */}
+                  <div className="space-y-5">
+                    <div>
+                      <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Client Customer Profile</label>
+                      <select {...register("customerId")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors">
+                        {customers.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name} ({c.email})
+                          </option>
+                        ))}
+                      </select>
+                      {errors.customerId && <p className="text-xs text-red-600 mt-1">{errors.customerId.message as string}</p>}
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Linked Reservation Job</label>
+                      <select {...register("bookingId")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors">
+                        {bookings.map((b) => (
+                          <option key={b.id} value={b.id}>
+                            Ref: {b.bookingRef} &middot; {b.customer.name} ({new Date(b.preferredDate).toLocaleDateString()})
+                          </option>
+                        ))}
+                      </select>
+                      {errors.bookingId && <p className="text-xs text-red-600 mt-1">{errors.bookingId.message as string}</p>}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Issue Date</label>
+                        <input type="date" {...register("issueDate")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" />
+                        {errors.issueDate && <p className="text-xs text-red-600 mt-1">{errors.issueDate.message as string}</p>}
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Due Date</label>
+                        <input type="date" {...register("dueDate")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" />
+                        {errors.dueDate && <p className="text-xs text-red-600 mt-1">{errors.dueDate.message as string}</p>}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column */}
+                  <div className="space-y-5">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Subtotal Price ($)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          {...register("subtotal")}
+                          onChange={(e) => {
+                            const val = Number(e.target.value) || 0;
+                            const gst = Math.round(val * 0.15 * 100) / 100;
+                            reset((prev) => {
+                              const discount = prev.discount || 0;
+                              const total = Math.round((val + gst - discount) * 100) / 100;
+                              return {
+                                ...prev,
+                                subtotal: val,
+                                gstAmount: gst,
+                                totalAmount: total,
+                              };
+                            });
+                          }}
+                          className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-mono transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Discount Applied ($)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          {...register("discount")}
+                          onChange={(e) => {
+                            const val = Number(e.target.value) || 0;
+                            reset((prev) => {
+                              const sub = prev.subtotal || 0;
+                              const gst = prev.gstAmount || 0;
+                              const total = Math.round((sub + gst - val) * 100) / 100;
+                              return {
+                                ...prev,
+                                discount: val,
+                                totalAmount: total,
+                              };
+                            });
+                          }}
+                          className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-mono text-red-600 transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 bg-stone-50 p-4 border border-stone-200 mt-2">
+                      <div>
+                        <p className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider mb-1">GST (15%)</p>
+                        <input
+                          type="number"
+                          step="0.01"
+                          disabled
+                          {...register("gstAmount")}
+                          className="w-full bg-transparent border-0 font-mono text-[14px] text-stone-500 font-semibold p-0"
+                        />
+                      </div>
+                      <div>
+                        <p className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider mb-1">Net Payable</p>
+                        <input
+                          type="number"
+                          step="0.01"
+                          disabled
+                          {...register("totalAmount")}
+                          className="w-full bg-transparent border-0 font-mono text-[15px] text-stone-900 font-bold p-0"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Payment status</label>
+                      <select {...register("status")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors">
+                        <option value="UNPAID">Unpaid Invoice</option>
+                        <option value="PARTIAL">Partial Payment</option>
+                        <option value="PAID">Settled / Paid</option>
+                        <option value="REFUNDED">Refunded</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <label className="form-label">Linked Reservation Job</label>
-                <select {...register("bookingId")} className="form-select text-[13px]">
-                  {bookings.map((b) => (
-                    <option key={b.id} value={b.id}>
-                      Ref: {b.bookingRef} &middot; {b.customer.name} ({new Date(b.preferredDate).toLocaleDateString()})
-                    </option>
-                  ))}
-                </select>
-                {errors.bookingId && <p className="text-xs text-red-600 mt-1">{errors.bookingId.message}</p>}
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="form-label">Issue Date</label>
-                  <input type="date" {...register("issueDate")} className="form-input text-[13px]" />
-                  {errors.issueDate && <p className="text-xs text-red-600 mt-1">{errors.issueDate.message}</p>}
-                </div>
-                <div>
-                  <label className="form-label">Due Date</label>
-                  <input type="date" {...register("dueDate")} className="form-input text-[13px]" />
-                  {errors.dueDate && <p className="text-xs text-red-600 mt-1">{errors.dueDate.message}</p>}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="form-label">Subtotal Price ($)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    {...register("subtotal")}
-                    onChange={(e) => {
-                      const val = Number(e.target.value) || 0;
-                      // Auto calculate GST and Grand Total
-                      const gst = Math.round(val * 0.15 * 100) / 100;
-                      reset((prev) => {
-                        const discount = prev.discount || 0;
-                        const total = Math.round((val + gst - discount) * 100) / 100;
-                        return {
-                          ...prev,
-                          subtotal: val,
-                          gstAmount: gst,
-                          totalAmount: total,
-                        };
-                      });
-                    }}
-                    className="form-input text-[13px] font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="form-label">Discount Applied ($)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    {...register("discount")}
-                    onChange={(e) => {
-                      const val = Number(e.target.value) || 0;
-                      reset((prev) => {
-                        const sub = prev.subtotal || 0;
-                        const gst = prev.gstAmount || 0;
-                        const total = Math.round((sub + gst - val) * 100) / 100;
-                        return {
-                          ...prev,
-                          discount: val,
-                          totalAmount: total,
-                        };
-                      });
-                    }}
-                    className="form-input text-[13px] font-mono text-red-600"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 bg-stone-50 p-3 border border-stone-200">
-                <div>
-                  <p className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider">GST (15%)</p>
-                  <input
-                    type="number"
-                    step="0.01"
-                    disabled
-                    {...register("gstAmount")}
-                    className="mt-1 w-full bg-transparent border-0 font-mono text-[14px] text-stone-500 font-semibold p-0"
-                  />
-                </div>
-                <div>
-                  <p className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider">Net Statement Payable</p>
-                  <input
-                    type="number"
-                    step="0.01"
-                    disabled
-                    {...register("totalAmount")}
-                    className="mt-1 w-full bg-transparent border-0 font-mono text-[15px] text-stone-900 font-bold p-0"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="form-label">Payment status</label>
-                <select {...register("status")} className="form-select text-[13px]">
-                  <option value="UNPAID">Unpaid Invoice</option>
-                  <option value="PARTIAL">Partial Payment</option>
-                  <option value="PAID">Settled / Paid</option>
-                  <option value="REFUNDED">Refunded</option>
-                </select>
-              </div>
-
-              <div className="pt-4 border-t border-stone-100 flex gap-2">
+              {/* Sticky Footer */}
+              <div className="border-t border-stone-200 px-6 py-4 bg-white shrink-0 flex flex-col sm:flex-row justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 border border-stone-200 hover:bg-stone-50 text-stone-700 text-[12px] font-bold py-3 uppercase tracking-widest cursor-pointer text-center"
+                  className="w-full sm:w-auto h-11 border border-[#DDD6CC] hover:bg-stone-50 text-stone-700 text-[11px] font-bold px-6 uppercase tracking-widest transition-colors cursor-pointer flex items-center justify-center"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="flex-1 bg-stone-900 hover:bg-stone-800 text-white text-[12px] font-bold py-3 uppercase tracking-widest cursor-pointer text-center disabled:opacity-50"
+                  className="w-full sm:w-auto h-11 bg-stone-900 hover:bg-stone-850 text-white text-[11px] font-bold px-8 uppercase tracking-widest transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center"
                 >
                   {isPending ? "Saving..." : editingInvoice ? "Update" : "Generate"}
                 </button>
@@ -409,7 +432,7 @@ export function InvoicesClient({ invoices: initialInvoices, customers, bookings 
             </form>
           </div>
         </div>
-      )}
+      , document.body)}
 
       {/* Delete Confirmation Dialog */}
       {deleteConfirmId && (

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { adminServiceSchema } from "@/schemas";
@@ -21,6 +22,11 @@ interface ServicesClientProps {
 export function ServicesClient({ services: initialServices }: ServicesClientProps) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [isOpen, setIsOpen] = useState(false);
   const [editingService, setEditingService] = useState<any>(null);
@@ -181,93 +187,112 @@ export function ServicesClient({ services: initialServices }: ServicesClientProp
         ))}
       </div>
 
-      {/* Slide-over Form Overlay */}
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setIsOpen(false)} />
-          <div className="relative bg-white border-l border-stone-200 w-full max-w-md h-full flex flex-col p-6 shadow-2xl animate-enter-fade">
-            <div className="flex justify-between items-center border-b border-stone-100 pb-4">
-              <h3 className="text-[15px] font-semibold text-stone-900">
+      {/* Centered Modal Overlay using Portal */}
+      {isOpen && mounted && createPortal(
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center bg-stone-900/40 p-4 sm:p-6 sm:items-center overflow-y-auto"
+          onClick={() => setIsOpen(false)}
+        >
+          <div 
+            className="relative bg-white border border-stone-200 w-full max-w-4xl max-h-none sm:max-h-[90vh] flex flex-col shadow-2xl rounded-sm my-auto shrink-0"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center border-b border-stone-200 px-6 py-5 bg-white shrink-0">
+              <h3 className="text-[15px] font-sans font-bold uppercase tracking-wider text-stone-900">
                 {editingService ? "Modify Cleaning Service" : "Add New Cleaning Service Category"}
               </h3>
-              <button onClick={() => setIsOpen(false)} className="text-stone-400 hover:text-stone-900 transition-colors">
+              <button onClick={() => setIsOpen(false)} className="text-stone-400 hover:text-stone-900 transition-colors p-1.5">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-y-auto py-4 space-y-4 pr-1">
-              <div>
-                <label className="form-label">Service Title</label>
-                <input type="text" {...register("name")} className="form-input text-[13px]" placeholder="E.g. Residential Cleaning" />
-                {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name.message}</p>}
-              </div>
+            {/* Scrollable Form Body */}
+            <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto px-6 py-6 scrollbar-thin min-h-0">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
+                  {/* Left Column */}
+                  <div className="space-y-5">
+                    <div>
+                      <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Service Title</label>
+                      <input type="text" {...register("name")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" placeholder="E.g. Residential Cleaning" />
+                      {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name.message as string}</p>}
+                    </div>
 
-              <div>
-                <label className="form-label">URL Slug</label>
-                <input type="text" {...register("slug")} className="form-input text-[13px]" placeholder="residential-cleaning" />
-                {errors.slug && <p className="text-xs text-red-600 mt-1">{errors.slug.message}</p>}
-              </div>
+                    <div>
+                      <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">URL Slug</label>
+                      <input type="text" {...register("slug")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" placeholder="residential-cleaning" />
+                      {errors.slug && <p className="text-xs text-red-600 mt-1">{errors.slug.message as string}</p>}
+                    </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="form-label">Service Category</label>
-                  <input type="text" {...register("category")} className="form-input text-[13px]" placeholder="Residential" />
-                  {errors.category && <p className="text-xs text-red-600 mt-1">{errors.category.message}</p>}
+                    <div>
+                      <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Full Service Description</label>
+                      <textarea
+                        {...register("description")}
+                        rows={6}
+                        className="w-full border border-[#DDD6CC] bg-white rounded-none p-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans resize-none"
+                        placeholder="Describe standard exclusions, inclusions, and checklists..."
+                      />
+                      {errors.description && <p className="text-xs text-red-600 mt-1">{errors.description.message as string}</p>}
+                    </div>
+                  </div>
+
+                  {/* Right Column */}
+                  <div className="space-y-5">
+                    <div>
+                      <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Service Category</label>
+                      <input type="text" {...register("category")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" placeholder="Residential" />
+                      {errors.category && <p className="text-xs text-red-600 mt-1">{errors.category.message as string}</p>}
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Pricing structure</label>
+                      <select {...register("priceType")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors">
+                        <option value="HOURLY">Hourly Rate</option>
+                        <option value="FIXED">Flat Rate</option>
+                        <option value="RANGE">Price Range</option>
+                      </select>
+                      {errors.priceType && <p className="text-xs text-red-600 mt-1">{errors.priceType.message as string}</p>}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Base Rate ($)</label>
+                        <input type="number" step="0.01" {...register("basePrice", { valueAsNumber: true })} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" />
+                        {errors.basePrice && <p className="text-xs text-red-600 mt-1">{errors.basePrice.message as string}</p>}
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5 block">Display Label</label>
+                        <input type="text" {...register("priceDescription")} className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" placeholder="$40 + GST / hour" />
+                        {errors.priceDescription && <p className="text-xs text-red-600 mt-1">{errors.priceDescription.message as string}</p>}
+                      </div>
+                    </div>
+
+                    <div className="bg-[#FAF9F6] border border-[#DDD6CC] p-4 mt-2">
+                      <div className="flex items-center gap-3">
+                        <input type="checkbox" {...register("isActive")} id="isActive" className="h-4 w-4 rounded-sm border-stone-300 text-stone-900 focus:ring-0 cursor-pointer" />
+                        <label htmlFor="isActive" className="text-[12px] font-semibold text-stone-700 cursor-pointer select-none">
+                          Service active and bookable online
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label className="form-label">Pricing structure</label>
-                  <select {...register("priceType")} className="form-select text-[13px]">
-                    <option value="HOURLY">Hourly Rate</option>
-                    <option value="FIXED">Flat Rate</option>
-                    <option value="RANGE">Price Range</option>
-                  </select>
-                  {errors.priceType && <p className="text-xs text-red-600 mt-1">{errors.priceType.message}</p>}
-                </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="form-label">Base Rate ($)</label>
-                  <input type="number" step="0.01" {...register("basePrice")} className="form-input text-[13px]" />
-                  {errors.basePrice && <p className="text-xs text-red-600 mt-1">{errors.basePrice.message}</p>}
-                </div>
-                <div>
-                  <label className="form-label">Pricing Display Label</label>
-                  <input type="text" {...register("priceDescription")} className="form-input text-[13px]" placeholder="$40 + GST / hour" />
-                  {errors.priceDescription && <p className="text-xs text-red-600 mt-1">{errors.priceDescription.message}</p>}
-                </div>
-              </div>
-
-              <div>
-                <label className="form-label">Full Service Description</label>
-                <textarea
-                  {...register("description")}
-                  rows={4}
-                  className="form-textarea text-[13px]"
-                  placeholder="Describe standard exclusions, inclusions, and checklists..."
-                />
-                {errors.description && <p className="text-xs text-red-600 mt-1">{errors.description.message}</p>}
-              </div>
-
-              <div className="flex items-center gap-2 pt-2">
-                <input type="checkbox" {...register("isActive")} id="isActive" className="h-4 w-4 rounded-none border-stone-300 text-stone-900 focus:ring-0 cursor-pointer" />
-                <label htmlFor="isActive" className="text-[12px] font-semibold text-stone-700 cursor-pointer select-none">
-                  Service active and bookable online
-                </label>
-              </div>
-
-              <div className="pt-4 border-t border-stone-100 flex gap-2">
+              {/* Sticky Footer */}
+              <div className="border-t border-stone-200 px-6 py-4 bg-white shrink-0 flex flex-col sm:flex-row justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 border border-stone-200 hover:bg-stone-50 text-stone-700 text-[12px] font-bold py-3 uppercase tracking-widest cursor-pointer text-center"
+                  className="w-full sm:w-auto h-11 border border-[#DDD6CC] hover:bg-stone-50 text-stone-700 text-[11px] font-bold px-6 uppercase tracking-widest transition-colors cursor-pointer flex items-center justify-center"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="flex-1 bg-stone-900 hover:bg-stone-800 text-white text-[12px] font-bold py-3 uppercase tracking-widest cursor-pointer text-center disabled:opacity-50"
+                  className="w-full sm:w-auto h-11 bg-stone-900 hover:bg-stone-850 text-white text-[11px] font-bold px-8 uppercase tracking-widest transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center"
                 >
                   {isPending ? "Saving..." : editingService ? "Update" : "Add Service"}
                 </button>
@@ -275,7 +300,7 @@ export function ServicesClient({ services: initialServices }: ServicesClientProp
             </form>
           </div>
         </div>
-      )}
+      , document.body)}
 
       {/* Delete Confirmation Dialog */}
       {deleteConfirmId && (
