@@ -9,7 +9,7 @@ const slides = [
   {
     image: "/images/hero_residential.png",
     subtitle: "Central & West Auckland Care",
-    title: "Residential Cleaning",
+    title: "PureSweep Residential Cleaning",
     description: "Consistent home service standards, delivered with transparent hourly rates and meticulous workmanship.",
   },
   {

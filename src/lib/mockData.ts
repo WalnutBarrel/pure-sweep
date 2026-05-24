@@ -397,7 +397,7 @@ export const db: Record<string, any[]> = {
     {
       id: "inv-item-2",
       invoiceId: "invoice-2",
-      description: "Deep Clean Package",
+      description: "PureSweep Deep Clean Package",
       quantity: 1,
       unitPrice: 320.00,
       totalPrice: 320.00,

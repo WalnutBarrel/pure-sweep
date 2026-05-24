@@ -25,7 +25,7 @@ const fadeUp = {
 };
 
 const serviceMap: Record<string, string> = {
-  "residential-cleaning": "Residential Cleaning",
+  "residential-cleaning": "PureSweep Residential Cleaning",
   "deep-cleaning": "Specialized Deep Cleaning",
   "move-in-move-out-cleaning": "Move-in / Move-out Cleaning",
   "commercial-cleaning": "Premium Commercial Cleaning",
@@ -238,7 +238,7 @@ I'd like to confirm the schedule details. Thank you!`;
             <div className="flex flex-col gap-2">
               <label className="form-label">Service Type</label>
               <select {...register("serviceId")} className="form-select">
-                <option value="residential-cleaning">Residential Cleaning -- $40 + GST / hr</option>
+                <option value="residential-cleaning">PureSweep Residential Cleaning -- $40 + GST / hr</option>
                 <option value="deep-cleaning">Deep Cleaning -- From $320 + GST</option>
                 <option value="move-in-move-out-cleaning">Move-in / Move-out Cleaning -- From $320 + GST</option>
                 <option value="commercial-cleaning">Commercial Cleaning -- $45 + GST / hr</option>
@@ -460,7 +460,7 @@ I'd like to confirm the schedule details. Thank you!`;
               </>
             ) : (
               <>
-                Confirm Reservation Request
+                Book Your PureSweep Cleaning
                 <ArrowRight className="h-3.5 w-3.5" />
               </>
             )}
