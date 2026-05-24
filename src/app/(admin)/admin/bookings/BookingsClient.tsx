@@ -339,7 +339,7 @@ export function BookingsClient({ bookings: initialBookings, customers, staff, se
       {/* Slide-over Drawer Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 z-50 flex justify-end bg-stone-900/35"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/35 p-4 sm:p-6"
           onClick={() => setIsOpen(false)}
         >
           <div 
@@ -348,7 +348,7 @@ export function BookingsClient({ bookings: initialBookings, customers, staff, se
             role="dialog"
             aria-modal="true"
             aria-labelledby="drawer-title"
-            className="relative bg-white border-l border-stone-200 w-full sm:max-w-[90vw] md:w-[540px] h-screen flex flex-col shadow-2xl focus:outline-none"
+            className="relative bg-white border border-stone-200 w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl focus:outline-none rounded-sm"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Sticky Header */}
@@ -370,206 +370,215 @@ export function BookingsClient({ bookings: initialBookings, customers, staff, se
               onSubmit={handleSubmit(onSubmit)} 
               className="flex-1 flex flex-col overflow-hidden"
             >
-              <div className="flex-1 overflow-y-auto px-6 py-6 space-y-5 scrollbar-thin">
-                {/* Customer Profile */}
-                <div>
-                  <div className="flex justify-between items-center mb-1.5">
-                    <label htmlFor="customerId" className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500">
-                      Customer Profile
-                    </label>
-                    <Link 
-                      href="/admin/customers" 
-                      target="_blank"
-                      className="text-xs text-[#0F3D3E] hover:underline font-semibold flex items-center gap-1"
-                    >
-                      + Add Customer
-                    </Link>
-                  </div>
-                  <select 
-                    id="customerId" 
-                    {...register("customerId")} 
-                    className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors"
-                  >
-                    {customers.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name} ({c.email})
-                      </option>
-                    ))}
-                  </select>
-                  {errors.customerId && <p className="text-xs text-red-600 mt-1">{errors.customerId.message as string}</p>}
-                </div>
+              <div className="flex-1 overflow-y-auto px-6 py-6 scrollbar-thin">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-5">
+                  
+                  {/* Left Column */}
+                  <div className="space-y-5">
+                    {/* Customer Profile */}
+                    <div>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <label htmlFor="customerId" className="text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500">
+                          Customer Profile
+                        </label>
+                        <Link 
+                          href="/admin/customers" 
+                          target="_blank"
+                          className="text-xs text-[#0F3D3E] hover:underline font-semibold flex items-center gap-1"
+                        >
+                          + Add Customer
+                        </Link>
+                      </div>
+                      <select 
+                        id="customerId" 
+                        {...register("customerId")} 
+                        className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors"
+                      >
+                        {customers.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name} ({c.email})
+                          </option>
+                        ))}
+                      </select>
+                      {errors.customerId && <p className="text-xs text-red-600 mt-1">{errors.customerId.message as string}</p>}
+                    </div>
 
-                {/* Service Option & Property Type Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="serviceId" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
-                      Service Option
-                    </label>
-                    <select 
-                      id="serviceId" 
-                      {...register("serviceId")} 
-                      className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors"
-                    >
-                      {services.map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.name}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.serviceId && <p className="text-xs text-red-600 mt-1">{errors.serviceId.message as string}</p>}
-                  </div>
+                    {/* Service Option & Property Type Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="serviceId" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
+                          Service Option
+                        </label>
+                        <select 
+                          id="serviceId" 
+                          {...register("serviceId")} 
+                          className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors"
+                        >
+                          {services.map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.name}
+                            </option>
+                          ))}
+                        </select>
+                        {errors.serviceId && <p className="text-xs text-red-600 mt-1">{errors.serviceId.message as string}</p>}
+                      </div>
 
-                  <div>
-                    <label htmlFor="propertyType" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
-                      Property Type
-                    </label>
-                    <select 
-                      id="propertyType" 
-                      {...register("propertyType")} 
-                      className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors"
-                    >
-                      <option value="House">Residential House</option>
-                      <option value="Apartment">Apartment / Unit</option>
-                      <option value="Office">Commercial Office</option>
-                      <option value="Retail">Retail Store</option>
-                    </select>
-                    {errors.propertyType && <p className="text-xs text-red-600 mt-1">{errors.propertyType.message as string}</p>}
-                  </div>
-                </div>
+                      <div>
+                        <label htmlFor="propertyType" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
+                          Property Type
+                        </label>
+                        <select 
+                          id="propertyType" 
+                          {...register("propertyType")} 
+                          className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors"
+                        >
+                          <option value="House">Residential House</option>
+                          <option value="Apartment">Apartment / Unit</option>
+                          <option value="Office">Commercial Office</option>
+                          <option value="Retail">Retail Store</option>
+                        </select>
+                        {errors.propertyType && <p className="text-xs text-red-600 mt-1">{errors.propertyType.message as string}</p>}
+                      </div>
+                    </div>
 
-                {/* Preferred Date & Preferred Time Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="preferredDate" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
-                      Preferred Date
-                    </label>
-                    <input 
-                      type="date" 
-                      id="preferredDate" 
-                      {...register("preferredDate")} 
-                      className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" 
-                    />
-                    {errors.preferredDate && <p className="text-xs text-red-600 mt-1">{errors.preferredDate.message as string}</p>}
-                  </div>
+                    {/* Preferred Date & Preferred Time Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="preferredDate" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
+                          Preferred Date
+                        </label>
+                        <input 
+                          type="date" 
+                          id="preferredDate" 
+                          {...register("preferredDate")} 
+                          className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors" 
+                        />
+                        {errors.preferredDate && <p className="text-xs text-red-600 mt-1">{errors.preferredDate.message as string}</p>}
+                      </div>
 
-                  <div>
-                    <label htmlFor="preferredTime" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
-                      Preferred Time
-                    </label>
-                    <select 
-                      id="preferredTime" 
-                      {...register("preferredTime")} 
-                      className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors"
-                    >
-                      <option value="Morning">Morning (8am - 12pm)</option>
-                      <option value="Afternoon">Afternoon (12pm - 4pm)</option>
-                      <option value="Late Afternoon">Late Afternoon (4pm - 6pm)</option>
-                    </select>
-                    {errors.preferredTime && <p className="text-xs text-red-600 mt-1">{errors.preferredTime.message as string}</p>}
-                  </div>
-                </div>
+                      <div>
+                        <label htmlFor="preferredTime" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
+                          Preferred Time
+                        </label>
+                        <select 
+                          id="preferredTime" 
+                          {...register("preferredTime")} 
+                          className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors"
+                        >
+                          <option value="Morning">Morning (8am - 12pm)</option>
+                          <option value="Afternoon">Afternoon (12pm - 4pm)</option>
+                          <option value="Late Afternoon">Late Afternoon (4pm - 6pm)</option>
+                        </select>
+                        {errors.preferredTime && <p className="text-xs text-red-600 mt-1">{errors.preferredTime.message as string}</p>}
+                      </div>
+                    </div>
 
-                {/* Cleaning Frequency */}
-                <div>
-                  <label htmlFor="cleaningFrequency" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
-                    Cleaning Frequency
-                  </label>
-                  <select 
-                    id="cleaningFrequency" 
-                    {...register("cleaningFrequency")} 
-                    className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors"
-                  >
-                    <option value="One-off">One-off / Casual</option>
-                    <option value="Weekly">Weekly Standard</option>
-                    <option value="Fortnightly">Fortnightly Regular</option>
-                    <option value="Monthly">Monthly Cycle</option>
-                  </select>
-                  {errors.cleaningFrequency && <p className="text-xs text-red-600 mt-1">{errors.cleaningFrequency.message as string}</p>}
-                </div>
-
-                {/* Status & Assignment Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="status" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
-                      Reservation Status
-                    </label>
-                    <select 
-                      id="status" 
-                      {...register("status")} 
-                      className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors"
-                    >
-                      <option value="PENDING">Pending Approval</option>
-                      <option value="CONFIRMED">Confirmed Schedule</option>
-                      <option value="IN_PROGRESS">Clean In Progress</option>
-                      <option value="COMPLETED">Completed Clean</option>
-                      <option value="CANCELLED">Cancelled</option>
-                    </select>
+                    {/* Cleaning Frequency */}
+                    <div>
+                      <label htmlFor="cleaningFrequency" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
+                        Cleaning Frequency
+                      </label>
+                      <select 
+                        id="cleaningFrequency" 
+                        {...register("cleaningFrequency")} 
+                        className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors"
+                      >
+                        <option value="One-off">One-off / Casual</option>
+                        <option value="Weekly">Weekly Standard</option>
+                        <option value="Fortnightly">Fortnightly Regular</option>
+                        <option value="Monthly">Monthly Cycle</option>
+                      </select>
+                      {errors.cleaningFrequency && <p className="text-xs text-red-600 mt-1">{errors.cleaningFrequency.message as string}</p>}
+                    </div>
                   </div>
 
-                  <div>
-                    <label htmlFor="assignedStaffId" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
-                      Assign Cleaner / Staff
-                    </label>
-                    <select 
-                      id="assignedStaffId" 
-                      {...register("assignedStaffId")} 
-                      className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors"
-                    >
-                      <option value="">No Cleaner Assigned</option>
-                      {staff.map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.firstName} {s.lastName}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
+                  {/* Right Column */}
+                  <div className="space-y-5">
+                    {/* Status & Assignment Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="status" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
+                          Reservation Status
+                        </label>
+                        <select 
+                          id="status" 
+                          {...register("status")} 
+                          className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors"
+                        >
+                          <option value="PENDING">Pending Approval</option>
+                          <option value="CONFIRMED">Confirmed Schedule</option>
+                          <option value="IN_PROGRESS">Clean In Progress</option>
+                          <option value="COMPLETED">Completed Clean</option>
+                          <option value="CANCELLED">Cancelled</option>
+                        </select>
+                      </div>
 
-                {/* Specific Instructions / Notes */}
-                <div>
-                  <label htmlFor="notes" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
-                    Specific Instructions / Notes
-                  </label>
-                  <textarea
-                    id="notes"
-                    {...register("notes")}
-                    rows={3}
-                    className="w-full border border-[#DDD6CC] bg-white rounded-none p-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans resize-none"
-                    placeholder="Special client requirements, access codes, lockbox keys, etc."
-                  />
-                  {errors.notes && <p className="text-xs text-red-600 mt-1">{errors.notes.message as string}</p>}
-                </div>
+                      <div>
+                        <label htmlFor="assignedStaffId" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
+                          Assign Cleaner / Staff
+                        </label>
+                        <select 
+                          id="assignedStaffId" 
+                          {...register("assignedStaffId")} 
+                          className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans transition-colors"
+                        >
+                          <option value="">No Cleaner Assigned</option>
+                          {staff.map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.firstName} {s.lastName}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
 
-                {/* Subtotal Input */}
-                <div>
-                  <label htmlFor="totalPrice" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
-                    Subtotal Amount ($)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    id="totalPrice"
-                    {...register("totalPrice", { valueAsNumber: true })}
-                    className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-mono"
-                  />
-                  {errors.totalPrice && <p className="text-xs text-red-600 mt-1">{errors.totalPrice.message as string}</p>}
-                </div>
+                    {/* Specific Instructions / Notes */}
+                    <div>
+                      <label htmlFor="notes" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
+                        Specific Instructions / Notes
+                      </label>
+                      <textarea
+                        id="notes"
+                        {...register("notes")}
+                        rows={3}
+                        className="w-full border border-[#DDD6CC] bg-white rounded-none p-3 text-[13px] outline-none focus:border-[#0F3D3E] font-sans resize-none"
+                        placeholder="Special client requirements, access codes, lockbox keys, etc."
+                      />
+                      {errors.notes && <p className="text-xs text-red-600 mt-1">{errors.notes.message as string}</p>}
+                    </div>
 
-                {/* Pricing Summary Box */}
-                <div className="bg-[#FAF9F6] border border-[#DDD6CC] p-4 font-sans space-y-2">
-                  <p className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Pricing Summary</p>
-                  <div className="flex justify-between items-center text-[13px] text-stone-600">
-                    <span>Subtotal</span>
-                    <span className="font-mono">{formatPrice(subtotalVal)}</span>
-                  </div>
-                  <div className="flex justify-between items-center text-[13px] text-stone-600">
-                    <span>GST (15%)</span>
-                    <span className="font-mono">{formatPrice(gstVal)}</span>
-                  </div>
-                  <div className="h-px bg-[#DDD6CC] my-1" />
-                  <div className="flex justify-between items-center text-sm text-stone-900 font-bold">
-                    <span>Grand Total</span>
-                    <span className="font-mono">{formatPrice(grandTotalVal)}</span>
+                    {/* Subtotal Input */}
+                    <div>
+                      <label htmlFor="totalPrice" className="block text-[11px] font-sans font-bold uppercase tracking-widest text-stone-500 mb-1.5">
+                        Subtotal Amount ($)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        id="totalPrice"
+                        {...register("totalPrice", { valueAsNumber: true })}
+                        className="w-full h-11 border border-[#DDD6CC] bg-white rounded-none px-3 text-[13px] outline-none focus:border-[#0F3D3E] font-mono"
+                      />
+                      {errors.totalPrice && <p className="text-xs text-red-600 mt-1">{errors.totalPrice.message as string}</p>}
+                    </div>
+
+                    {/* Pricing Summary Box */}
+                    <div className="bg-[#FAF9F6] border border-[#DDD6CC] p-4 font-sans space-y-2">
+                      <p className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Pricing Summary</p>
+                      <div className="flex justify-between items-center text-[13px] text-stone-600">
+                        <span>Subtotal</span>
+                        <span className="font-mono">{formatPrice(subtotalVal)}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[13px] text-stone-600">
+                        <span>GST (15%)</span>
+                        <span className="font-mono">{formatPrice(gstVal)}</span>
+                      </div>
+                      <div className="h-px bg-[#DDD6CC] my-1" />
+                      <div className="flex justify-between items-center text-sm text-stone-900 font-bold">
+                        <span>Grand Total</span>
+                        <span className="font-mono">{formatPrice(grandTotalVal)}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
