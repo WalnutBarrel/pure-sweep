@@ -42,13 +42,14 @@ export default function HomePage() {
   };
 
   return (
-    <div className="space-y-24 pb-20 overflow-x-hidden">
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {/* 2. Editorial Hero with Slow Slider */}
-      <HeroSlider />
+      <div className="space-y-24 pb-20 overflow-x-hidden">
+        {/* 2. Editorial Hero with Slow Slider */}
+        <HeroSlider />
 
       {/* 3. Trust Strip */}
       <FadeIn delay={0.1}>
@@ -270,5 +271,6 @@ export default function HomePage() {
         <BookingCTA />
       </FadeIn>
     </div>
+    </>
   );
 }
