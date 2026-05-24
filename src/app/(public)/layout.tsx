@@ -11,7 +11,7 @@ export default function PublicLayout({
     <div className="flex min-h-screen flex-col bg-background text-foreground transition-all duration-300">
       {/* Top Refined Border & Auckland Notice */}
       <div className="border-b border-border bg-background py-2 text-center text-[10px] tracking-widest uppercase text-muted-text">
-        Bespoke Cleaning Services — Auckland, New Zealand
+        Professional Cleaning Services — Auckland, New Zealand
       </div>
 
       {/* Global Brand Header */}

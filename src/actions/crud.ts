@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth-utils";
 import {
   adminServiceSchema,
   adminPricingPlanSchema,
@@ -34,6 +35,8 @@ async function logActivity(action: string, details: string) {
 // 1. SERVICES CRUD
 // ============================================================================
 export async function createService(data: unknown) {
+  await requireAdmin();
+
   const result = adminServiceSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -64,6 +67,8 @@ export async function createService(data: unknown) {
 }
 
 export async function updateService(id: string, data: unknown) {
+  await requireAdmin();
+
   const result = adminServiceSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -95,6 +100,8 @@ export async function updateService(id: string, data: unknown) {
 }
 
 export async function deleteService(id: string) {
+  await requireAdmin();
+
   try {
     const service = await prisma.service.delete({
       where: { id },
@@ -113,6 +120,8 @@ export async function deleteService(id: string) {
 // 2. PRICING PLANS CRUD
 // ============================================================================
 export async function createPricingPlan(data: unknown) {
+  await requireAdmin();
+
   const result = adminPricingPlanSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -139,6 +148,8 @@ export async function createPricingPlan(data: unknown) {
 }
 
 export async function updatePricingPlan(id: string, data: unknown) {
+  await requireAdmin();
+
   const result = adminPricingPlanSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -166,6 +177,8 @@ export async function updatePricingPlan(id: string, data: unknown) {
 }
 
 export async function deletePricingPlan(id: string) {
+  await requireAdmin();
+
   try {
     const plan = await prisma.pricingPlan.delete({
       where: { id },
@@ -183,6 +196,8 @@ export async function deletePricingPlan(id: string) {
 // 3. BOOKINGS CRUD
 // ============================================================================
 export async function createBookingAdmin(data: unknown) {
+  await requireAdmin();
+
   const result = adminBookingSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -241,6 +256,8 @@ export async function createBookingAdmin(data: unknown) {
 }
 
 export async function updateBookingAdmin(id: string, data: unknown) {
+  await requireAdmin();
+
   const result = adminBookingSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -308,6 +325,8 @@ export async function updateBookingAdmin(id: string, data: unknown) {
 }
 
 export async function deleteBookingAdmin(id: string) {
+  await requireAdmin();
+
   try {
     const booking = await prisma.booking.delete({
       where: { id },
@@ -326,6 +345,8 @@ export async function deleteBookingAdmin(id: string) {
 // 4. CUSTOMERS CRUD
 // ============================================================================
 export async function createCustomer(data: unknown) {
+  await requireAdmin();
+
   const result = adminCustomerSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -353,6 +374,8 @@ export async function createCustomer(data: unknown) {
 }
 
 export async function updateCustomer(id: string, data: unknown) {
+  await requireAdmin();
+
   const result = adminCustomerSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -381,6 +404,8 @@ export async function updateCustomer(id: string, data: unknown) {
 }
 
 export async function deleteCustomer(id: string) {
+  await requireAdmin();
+
   try {
     const customer = await prisma.customer.delete({
       where: { id },
@@ -399,6 +424,8 @@ export async function deleteCustomer(id: string) {
 // 5. INVOICES CRUD
 // ============================================================================
 export async function createInvoice(data: unknown) {
+  await requireAdmin();
+
   const result = adminInvoiceSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -430,6 +457,8 @@ export async function createInvoice(data: unknown) {
 }
 
 export async function updateInvoice(id: string, data: unknown) {
+  await requireAdmin();
+
   const result = adminInvoiceSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -460,6 +489,8 @@ export async function updateInvoice(id: string, data: unknown) {
 }
 
 export async function deleteInvoice(id: string) {
+  await requireAdmin();
+
   try {
     const invoice = await prisma.invoice.delete({
       where: { id },
@@ -478,6 +509,8 @@ export async function deleteInvoice(id: string) {
 // 6. PAYMENTS CRUD
 // ============================================================================
 export async function createPayment(data: unknown) {
+  await requireAdmin();
+
   const result = adminPaymentSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -521,6 +554,8 @@ export async function createPayment(data: unknown) {
 // 7. EXPENSES CRUD
 // ============================================================================
 export async function createExpense(data: unknown) {
+  await requireAdmin();
+
   const result = adminExpenseSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -549,6 +584,8 @@ export async function createExpense(data: unknown) {
 }
 
 export async function updateExpense(id: string, data: unknown) {
+  await requireAdmin();
+
   const result = adminExpenseSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -578,6 +615,8 @@ export async function updateExpense(id: string, data: unknown) {
 }
 
 export async function deleteExpense(id: string) {
+  await requireAdmin();
+
   try {
     const expense = await prisma.expense.delete({
       where: { id },
@@ -596,6 +635,8 @@ export async function deleteExpense(id: string) {
 // 8. STAFF CRUD
 // ============================================================================
 export async function createStaff(data: unknown) {
+  await requireAdmin();
+
   const result = adminStaffSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -645,6 +686,8 @@ export async function createStaff(data: unknown) {
 }
 
 export async function updateStaff(id: string, data: unknown) {
+  await requireAdmin();
+
   const result = adminStaffSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -671,6 +714,8 @@ export async function updateStaff(id: string, data: unknown) {
 }
 
 export async function deleteStaff(id: string) {
+  await requireAdmin();
+
   try {
     const staff = await prisma.staff.delete({
       where: { id },
@@ -688,6 +733,8 @@ export async function deleteStaff(id: string) {
 // 9. TESTIMONIALS CRUD
 // ============================================================================
 export async function createTestimonial(data: unknown) {
+  await requireAdmin();
+
   const result = adminTestimonialSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -714,6 +761,8 @@ export async function createTestimonial(data: unknown) {
 }
 
 export async function updateTestimonial(id: string, data: unknown) {
+  await requireAdmin();
+
   const result = adminTestimonialSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -741,6 +790,8 @@ export async function updateTestimonial(id: string, data: unknown) {
 }
 
 export async function deleteTestimonial(id: string) {
+  await requireAdmin();
+
   try {
     await prisma.testimonial.delete({
       where: { id },
@@ -758,6 +809,8 @@ export async function deleteTestimonial(id: string) {
 // 10. SETTINGS CRUD
 // ============================================================================
 export async function updateSetting(key: string, value: string, description?: string) {
+  await requireAdmin();
+
   try {
     const setting = await prisma.setting.upsert({
       where: { key },
@@ -780,6 +833,8 @@ export async function updateSetting(key: string, value: string, description?: st
 import { MessageStatus } from "@prisma/client";
 
 export async function updateContactMessageStatus(id: string, status: MessageStatus) {
+  await requireAdmin();
+
   try {
     const message = await prisma.contactMessage.update({
       where: { id },
@@ -795,6 +850,8 @@ export async function updateContactMessageStatus(id: string, status: MessageStat
 }
 
 export async function deleteContactMessage(id: string) {
+  await requireAdmin();
+
   try {
     await prisma.contactMessage.delete({
       where: { id },

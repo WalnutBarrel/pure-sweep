@@ -25,7 +25,7 @@ const fadeUp = {
 };
 
 const serviceMap: Record<string, string> = {
-  "residential-cleaning": "Bespoke Residential Cleaning",
+  "residential-cleaning": "Residential Cleaning",
   "deep-cleaning": "Specialized Deep Cleaning",
   "move-in-move-out-cleaning": "Move-in / Move-out Cleaning",
   "commercial-cleaning": "Premium Commercial Cleaning",

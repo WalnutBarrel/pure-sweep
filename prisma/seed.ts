@@ -441,7 +441,7 @@ async function main() {
 
   await prisma.invoiceItem.createMany({
     data: [
-      { invoiceId: invoice2.id, description: "Bespoke Deep Clean Package", quantity: 1, unitPrice: 320.00, totalPrice: 320.00 },
+      { invoiceId: invoice2.id, description: "Deep Clean Package", quantity: 1, unitPrice: 320.00, totalPrice: 320.00 },
       { invoiceId: invoice2.id, description: "Oven Deep Clean Add-On", quantity: 1, unitPrice: 67.00, totalPrice: 67.00 },
     ],
   });
