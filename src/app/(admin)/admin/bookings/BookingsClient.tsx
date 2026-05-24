@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useTransition, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { adminBookingSchema } from "@/schemas";
@@ -30,6 +31,11 @@ export function BookingsClient({ bookings: initialBookings, customers, staff, se
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Form & Modal state
   const [isOpen, setIsOpen] = useState(false);
@@ -336,10 +342,10 @@ export function BookingsClient({ bookings: initialBookings, customers, staff, se
         </div>
       )}
 
-      {/* Slide-over Drawer Overlay */}
-      {isOpen && (
+      {/* Centered Modal Overlay */}
+      {isOpen && mounted && createPortal(
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/35 p-4 sm:p-6"
+          className="fixed inset-0 z-50 flex items-start justify-center bg-stone-900/40 p-4 sm:p-6 sm:items-center overflow-y-auto"
           onClick={() => setIsOpen(false)}
         >
           <div 
@@ -348,7 +354,7 @@ export function BookingsClient({ bookings: initialBookings, customers, staff, se
             role="dialog"
             aria-modal="true"
             aria-labelledby="drawer-title"
-            className="relative bg-white border border-stone-200 w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl focus:outline-none rounded-sm"
+            className="relative bg-white border border-stone-200 w-full max-w-4xl max-h-none sm:max-h-[90vh] flex flex-col shadow-2xl focus:outline-none rounded-sm my-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Sticky Header */}
@@ -368,9 +374,9 @@ export function BookingsClient({ bookings: initialBookings, customers, staff, se
             {/* Scrollable Form Body */}
             <form 
               onSubmit={handleSubmit(onSubmit)} 
-              className="flex-1 flex flex-col overflow-hidden"
+              className="flex-1 flex flex-col min-h-0 overflow-hidden"
             >
-              <div className="flex-1 overflow-y-auto px-6 py-6 scrollbar-thin">
+              <div className="flex-1 overflow-y-auto px-6 py-6 scrollbar-thin min-h-0">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-5">
                   
                   {/* Left Column */}
@@ -603,7 +609,7 @@ export function BookingsClient({ bookings: initialBookings, customers, staff, se
             </form>
           </div>
         </div>
-      )}
+      , document.body)}
 
       {/* Delete Confirmation Dialog */}
       {deleteConfirmId && (

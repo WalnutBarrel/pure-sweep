@@ -153,7 +153,7 @@ export default function AdminLayout({
           </header>
 
           {/* Page Content */}
-          <main className="flex-1 overflow-y-auto p-5 lg:p-8 [&:has(.fixed.inset-0)]:overflow-hidden">
+          <main id="admin-main-content" className="flex-1 overflow-y-auto p-5 lg:p-8">
             {children}
           </main>
         </div>
