@@ -8,8 +8,8 @@ interface BookingCTAProps {
 }
 
 export default function BookingCTA({
-  title = "Ready for a cleaner space?",
-  description = "Schedule your service online with transparent pricing. Our team of experienced Auckland cleaners is ready to assist you.",
+  title = "Get a Free Estimate",
+  description = "Get an instant free estimate for your property using our online calculator, or contact our Auckland team for a custom quote.",
   className = "",
 }: BookingCTAProps) {
   return (
@@ -26,7 +26,7 @@ export default function BookingCTA({
           </div>
           <div className="flex flex-row gap-4 shrink-0">
             <Link href="/book-a-cleaning" className="btn-primary px-8 text-xs">
-              Book a Cleaning
+              Get Your Free Estimate
             </Link>
             <Link href="/contact" className="btn-outline border-primary text-primary hover:bg-primary hover:text-surface px-8 text-xs">
               Contact Team

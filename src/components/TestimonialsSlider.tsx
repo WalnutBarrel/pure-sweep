@@ -75,9 +75,8 @@ export default function TestimonialsSlider() {
                 </blockquote>
 
                 <div className="space-y-1">
-                  <p className="text-sm font-semibold text-stone-800">{current.author}</p>
+                  <p className="text-sm font-semibold text-stone-800">{current.role}</p>
                   <p className="text-xs text-muted-text">
-                    {current.role} &bull;{" "}
                     <span className="text-accent font-medium">{current.location}</span>
                   </p>
                 </div>

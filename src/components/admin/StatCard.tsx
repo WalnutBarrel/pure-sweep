@@ -14,8 +14,8 @@ export function StatCard({ label, value, subValue, trend, className }: StatCardP
       <p className="text-[11px] font-semibold uppercase tracking-widest text-stone-400">
         {label}
       </p>
-      <div className="flex items-end justify-between gap-2">
-        <p className="text-2xl font-mono font-medium text-stone-900 tracking-tight leading-none">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
+        <p className="text-2xl font-mono font-medium text-stone-900 tracking-tight leading-none truncate">
           {value}
         </p>
         {trend && (
