@@ -1,8 +1,20 @@
+import type { Metadata } from "next";
+import prisma from "@/lib/prisma";
 import Container from "@/components/Container";
 import SectionHeader from "@/components/SectionHeader";
 import ServiceCard from "@/components/ServiceCard";
 import BookingCTA from "@/components/BookingCTA";
 import { FadeIn, RevealText, StaggerGroup, MotionSection } from "@/components/motion/MotionComponents";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const titleSetting = await prisma.setting.findUnique({ where: { key: "seo_services_title" } });
+  const descSetting = await prisma.setting.findUnique({ where: { key: "seo_services_desc" } });
+  
+  return {
+    title: titleSetting?.value || "Our Services | PureSweep Cleaning Auckland",
+    description: descSetting?.value || "Explore our range of premium cleaning services including residential, commercial, deep cleaning, carpet cleaning, and move-in/move-out cleans in Auckland.",
+  };
+}
 
 export default function ServicesPage() {
   const services = [

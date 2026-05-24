@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import prisma from "@/lib/prisma";
 import Link from "next/link";
 import Container from "@/components/Container";
 import SectionHeader from "@/components/SectionHeader";
@@ -9,9 +11,40 @@ import TestimonialsSlider from "@/components/TestimonialsSlider";
 import { FadeIn, RevealText, StaggerGroup, MotionSection } from "@/components/motion/MotionComponents";
 import { CheckCircle2, ShieldCheck, Zap, Heart } from "lucide-react";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const titleSetting = await prisma.setting.findUnique({ where: { key: "seo_home_title" } });
+  const descSetting = await prisma.setting.findUnique({ where: { key: "seo_home_desc" } });
+  
+  return {
+    title: titleSetting?.value || "PureSweep Cleaning | Premium Cleaning Services in Auckland",
+    description: descSetting?.value || "Refined residential, commercial, deep, carpet, and move-in/move-out cleaning services in Auckland.",
+  };
+}
+
 export default function HomePage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "PureSweep Cleaning",
+    "image": "https://puresweep.co.nz/icon.png",
+    "description": "Refined residential, commercial, deep, carpet, and move-in/move-out cleaning services in Auckland, New Zealand.",
+    "url": "https://puresweep.co.nz",
+    "telephone": "021-026999-56",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Auckland",
+      "addressCountry": "NZ"
+    },
+    "areaServed": "Auckland",
+    "priceRange": "$$"
+  };
+
   return (
     <div className="space-y-24 pb-20 overflow-x-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* 2. Editorial Hero with Slow Slider */}
       <HeroSlider />
 

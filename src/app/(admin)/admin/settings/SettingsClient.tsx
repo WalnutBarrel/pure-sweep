@@ -35,7 +35,7 @@ interface SettingsClientProps {
 export function SettingsClient({ settings, staff: initialStaff, testimonials: initialTestimonials, activityLogs }: SettingsClientProps) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
-  const [activeTab, setActiveTab] = useState<"config" | "staff" | "testimonials" | "logs">("config");
+  const [activeTab, setActiveTab] = useState<"config" | "seo" | "staff" | "testimonials" | "logs">("config");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -168,6 +168,17 @@ export function SettingsClient({ settings, staff: initialStaff, testimonials: in
           Configuration
         </button>
         <button
+          onClick={() => setActiveTab("seo")}
+          className={`flex items-center gap-2 px-4 py-2.5 text-[12px] font-bold uppercase tracking-wider transition-colors cursor-pointer border-b-2 ${
+            activeTab === "seo"
+              ? "border-stone-900 text-stone-900 bg-stone-50"
+              : "border-transparent text-stone-400 hover:text-stone-700"
+          }`}
+        >
+          <ScrollText className="h-4 w-4" />
+          SEO Manager
+        </button>
+        <button
           onClick={() => setActiveTab("staff")}
           className={`flex items-center gap-2 px-4 py-2.5 text-[12px] font-bold uppercase tracking-wider transition-colors cursor-pointer border-b-2 ${
             activeTab === "staff"
@@ -206,7 +217,7 @@ export function SettingsClient({ settings, staff: initialStaff, testimonials: in
       {activeTab === "config" && (
         <div className="space-y-4">
           <DataTable columns={["Setting Key", "Value", "Description", "Actions"]}>
-            {settings.map((s) => (
+            {settings.filter((s) => !s.key.startsWith('seo_')).map((s) => (
               <tr key={s.id} className="hover:bg-stone-50/50">
                 <td className="px-4 py-3 font-mono text-[13px] font-semibold text-stone-700">{s.key}</td>
                 <td className="px-4 py-3 font-mono text-[13px] text-stone-900">
@@ -219,6 +230,75 @@ export function SettingsClient({ settings, staff: initialStaff, testimonials: in
                     />
                   ) : (
                     s.value
+                  )}
+                </td>
+                <td className="px-4 py-3 text-[12px] text-stone-400">
+                  {configEditing?.key === s.key ? (
+                    <input
+                      type="text"
+                      value={configDesc}
+                      onChange={(e) => setConfigDesc(e.target.value)}
+                      className="border border-stone-200 px-2 py-1 text-[12px] outline-none w-full"
+                    />
+                  ) : (
+                    s.description || "—"
+                  )}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  {configEditing?.key === s.key ? (
+                    <div className="flex gap-2 justify-end">
+                      <button
+                        onClick={handleConfigSave}
+                        className="px-3 py-1.5 bg-stone-900 text-white text-[11px] font-bold uppercase transition-colors cursor-pointer"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setConfigEditing(null)}
+                        className="px-3 py-1.5 border border-stone-200 text-stone-700 text-[11px] font-bold uppercase transition-colors cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setConfigEditing(s);
+                        setConfigValue(s.value);
+                        setConfigDesc(s.description || "");
+                      }}
+                      className="p-1 hover:text-stone-950 text-stone-400 transition-colors"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </DataTable>
+        </div>
+      )}
+
+      {/* 2. SEO TAB */}
+      {activeTab === "seo" && (
+        <div className="space-y-4">
+          <div className="bg-stone-50 border border-stone-200 p-4">
+            <p className="text-[12px] text-stone-500 font-medium">Manage the meta titles and descriptions for all public-facing pages. These changes take effect instantly and will be crawled by Google via the dynamic sitemap.</p>
+          </div>
+          <DataTable columns={["Page SEO Key", "Title / Description Value", "Page Reference", "Actions"]}>
+            {settings.filter((s) => s.key.startsWith('seo_')).map((s) => (
+              <tr key={s.id} className="hover:bg-stone-50/50">
+                <td className="px-4 py-3 font-mono text-[13px] font-semibold text-stone-700">{s.key}</td>
+                <td className="px-4 py-3 text-[13px] text-stone-900">
+                  {configEditing?.key === s.key ? (
+                    <textarea
+                      value={configValue}
+                      rows={2}
+                      onChange={(e) => setConfigValue(e.target.value)}
+                      className="border border-stone-200 px-2 py-1 text-[13px] font-sans outline-none w-full resize-none"
+                    />
+                  ) : (
+                    <span className="line-clamp-2 max-w-[400px]">{s.value}</span>
                   )}
                 </td>
                 <td className="px-4 py-3 text-[12px] text-stone-400">

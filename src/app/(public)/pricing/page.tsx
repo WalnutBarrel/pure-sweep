@@ -1,9 +1,21 @@
+import type { Metadata } from "next";
+import prisma from "@/lib/prisma";
 import Container from "@/components/Container";
 import SectionHeader from "@/components/SectionHeader";
 import PricingCard from "@/components/PricingCard";
 import BookingCTA from "@/components/BookingCTA";
 import { HelpCircle } from "lucide-react";
 import { FadeIn, RevealText, StaggerGroup, MotionSection } from "@/components/motion/MotionComponents";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const titleSetting = await prisma.setting.findUnique({ where: { key: "seo_pricing_title" } });
+  const descSetting = await prisma.setting.findUnique({ where: { key: "seo_pricing_desc" } });
+  
+  return {
+    title: titleSetting?.value || "Transparent Pricing | PureSweep Cleaning",
+    description: descSetting?.value || "View our clear, upfront pricing for residential, commercial, and specialized cleaning services across Auckland. No hidden fees.",
+  };
+}
 
 export default function PricingPage() {
   const plans = [

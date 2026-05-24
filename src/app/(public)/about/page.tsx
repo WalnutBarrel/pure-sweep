@@ -1,8 +1,20 @@
+import type { Metadata } from "next";
+import prisma from "@/lib/prisma";
 import Container from "@/components/Container";
 import SectionHeader from "@/components/SectionHeader";
 import BookingCTA from "@/components/BookingCTA";
 import { FadeIn, RevealText, StaggerGroup, MotionSection } from "@/components/motion/MotionComponents";
 import { ShieldCheck, Heart, Users, Star } from "lucide-react";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const titleSetting = await prisma.setting.findUnique({ where: { key: "seo_about_title" } });
+  const descSetting = await prisma.setting.findUnique({ where: { key: "seo_about_desc" } });
+  
+  return {
+    title: titleSetting?.value || "About Us | PureSweep Cleaning Auckland",
+    description: descSetting?.value || "Learn about PureSweep Cleaning, Auckland's most trusted premium cleaning team.",
+  };
+}
 
 export default function AboutPage() {
   return (

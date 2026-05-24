@@ -1,5 +1,17 @@
+import type { Metadata } from "next";
+import prisma from "@/lib/prisma";
 import ContactBlock from "@/components/ContactBlock";
 import ContactForm from "./ContactForm";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const titleSetting = await prisma.setting.findUnique({ where: { key: "seo_contact_title" } });
+  const descSetting = await prisma.setting.findUnique({ where: { key: "seo_contact_desc" } });
+  
+  return {
+    title: titleSetting?.value || "Contact Us | PureSweep Cleaning Auckland",
+    description: descSetting?.value || "Get in touch with PureSweep Cleaning. Request a custom quote, ask a question, or reach out to our Auckland team.",
+  };
+}
 
 export default function ContactPage() {
   return (
