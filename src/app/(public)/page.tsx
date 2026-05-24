@@ -25,11 +25,11 @@ export default function HomePage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "PureSweep Cleaning",
+    "name": "Puresweep",
     "image": "https://puresweep.co.nz/icon.png",
     "description": "Refined residential, commercial, deep, carpet, and move-in/move-out cleaning services in Auckland, New Zealand.",
     "url": "https://puresweep.co.nz",
-    "telephone": "021-026999-56",
+    "telephone": "0210 269 9956",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Hillsborough",
