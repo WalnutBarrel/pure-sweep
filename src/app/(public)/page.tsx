@@ -32,7 +32,9 @@ export default function HomePage() {
     "telephone": "021-026999-56",
     "address": {
       "@type": "PostalAddress",
+      "streetAddress": "Hillsborough",
       "addressLocality": "Auckland",
+      "postalCode": "1042",
       "addressCountry": "NZ"
     },
     "areaServed": "Auckland",
