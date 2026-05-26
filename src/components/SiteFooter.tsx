@@ -102,12 +102,17 @@ export default async function SiteFooter() {
         {/* Lower Footer */}
         <div className="border-t border-[#2D3835] pt-8 flex flex-col md:flex-row justify-between items-center text-[11px] text-[#B2ABA0] gap-4">
           <p>© {currentYear} PureSweep Cleaning. All rights reserved.</p>
-          <div className="flex space-x-6">
-            <Link href="/admin/dashboard" className="hover:text-white transition-colors">
-              Console Admin Login
+          <div className="flex space-x-4 md:space-x-6 flex-wrap justify-center md:justify-end">
+            <Link href="/privacy" className="hover:text-white transition-colors">
+              Privacy Policy
             </Link>
-            <span className="text-[#2D3835]">|</span>
-            <p>Auckland Central & West Region</p>
+            <Link href="/terms" className="hover:text-white transition-colors">
+              Terms of Service
+            </Link>
+            <span className="text-[#2D3835] hidden md:inline">|</span>
+            <Link href="/admin/dashboard" className="hover:text-white transition-colors">
+              Admin Login
+            </Link>
           </div>
         </div>
       </Container>
