@@ -82,7 +82,7 @@ export default function HomePage() {
                   <Heart className="h-5 w-5 text-accent shrink-0" />
                   <div>
                     <h4 className="text-[11px] font-bold uppercase tracking-[0.1em] text-primary">100% Satisfaction</h4>
-                    <p className="text-xs text-stone-500 mt-0.5">Recleaned if standards aren't met.</p>
+                    <p className="text-xs text-stone-500 mt-0.5">Recleaned if standards aren&apos;t met.</p>
                   </div>
                 </div>
               </div>
