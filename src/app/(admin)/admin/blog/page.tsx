@@ -53,6 +53,9 @@ export default async function AdminBlogPage() {
                     {new Intl.DateTimeFormat('en-NZ').format(post.createdAt)}
                   </td>
                   <td className="p-4 text-right space-x-2">
+                    <Link href={`/admin/blog/${post.id}/edit`} className="inline-block p-2 text-stone-500 hover:bg-stone-100 rounded" title="Edit">
+                      <Edit className="w-4 h-4" />
+                    </Link>
                     <form action={async () => {
                       "use server";
                       await deleteBlogPost(post.id);
