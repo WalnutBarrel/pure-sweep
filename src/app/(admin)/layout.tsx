@@ -18,6 +18,7 @@ import {
   ExternalLink,
   DollarSign,
   Mail,
+  FileText,
 } from "lucide-react";
 
 const navItems = [
@@ -26,6 +27,7 @@ const navItems = [
   { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/messages", label: "Inbox", icon: Mail },
   { href: "/admin/services", label: "Services", icon: Wrench },
+  { href: "/admin/blog", label: "Blog", icon: FileText },
   { href: "/admin/invoices", label: "Invoices", icon: Receipt },
   { href: "/admin/expenses", label: "Expenses", icon: DollarSign },
   { href: "/admin/reports", label: "Reports", icon: BarChart3 },

@@ -60,6 +60,11 @@ export default async function SiteFooter() {
                   Get In Touch
                 </Link>
               </li>
+              <li>
+                <Link href="/blog" className="hover:text-accent transition-colors duration-hover">
+                  Journal
+                </Link>
+              </li>
             </ul>
           </div>
 
