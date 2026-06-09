@@ -141,7 +141,7 @@ export default function HomePage() {
                   features={["Kitchen Counter Polishing", "Bathrooms & Toilet Scrubbing", "Dusting & Cobweb Sweeping", "Floor Mopping & Vacuuming"]}
                 />
               </FadeIn>
-              <FadeIn delay={0.2} className="lg:col-span-7 lg:mt-24 flex flex-col">
+              <FadeIn delay={0.2} className="lg:col-span-7 flex flex-col">
                 <ServiceCard
                   title="Commercial Cleaning"
                   slug="commercial-cleaning"
@@ -150,7 +150,7 @@ export default function HomePage() {
                   features={["Desk Sanitation", "Staff Kitchen Deep Cleaning", "Boardroom Upkeep", "Rubbish & Recycle Disposal"]}
                 />
               </FadeIn>
-              <FadeIn delay={0.3} className="lg:col-span-6 lg:col-start-4 lg:-mt-12 flex flex-col">
+              <FadeIn delay={0.3} className="lg:col-span-6 lg:col-start-4 flex flex-col">
                 <ServiceCard
                   title="Specialized Deep Cleaning"
                   slug="deep-cleaning"
@@ -191,7 +191,7 @@ export default function HomePage() {
                   ]}
                 />
               </FadeIn>
-              <FadeIn delay={0.2} className="lg:col-span-5 relative z-10 lg:-mx-4 lg:-my-8">
+              <FadeIn delay={0.2} className="lg:col-span-5 relative z-10 lg:-mx-4">
                 <PricingCard
                   title="3-Bedroom Home"
                   price="$400"
