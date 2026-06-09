@@ -131,35 +131,29 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 mt-12">
-              <FadeIn delay={0.1} className="lg:col-span-5 flex flex-col">
-                <ServiceCard
-                  title="Residential Cleaning"
-                  slug="residential-cleaning"
-                  priceDesc="$40 + GST / hour"
-                  description="A refined home clean including detailed kitchen sanitization, vacuuming, mopping, dusting, and linen straightening."
-                  features={["Kitchen Counter Polishing", "Bathrooms & Toilet Scrubbing", "Dusting & Cobweb Sweeping", "Floor Mopping & Vacuuming"]}
-                />
-              </FadeIn>
-              <FadeIn delay={0.2} className="lg:col-span-7 flex flex-col">
-                <ServiceCard
-                  title="Commercial Cleaning"
-                  slug="commercial-cleaning"
-                  priceDesc="$45 + GST / hour"
-                  description="Hygienic workspace maintenance for boardrooms, shared desks, staff kitchens, and reception spaces in corporate offices."
-                  features={["Desk Sanitation", "Staff Kitchen Deep Cleaning", "Boardroom Upkeep", "Rubbish & Recycle Disposal"]}
-                />
-              </FadeIn>
-              <FadeIn delay={0.3} className="lg:col-span-6 lg:col-start-4 flex flex-col">
-                <ServiceCard
-                  title="Specialized Deep Cleaning"
-                  slug="deep-cleaning"
-                  priceDesc="Starting at $320 + GST"
-                  description="Detailed restorative scrubbing of baseboards, tile grout lines, oven interior walls, and central window frames."
-                  features={["Skirting Board Hand-Wiping", "Tile Grout Line Restoration", "Oven Interior Polish", "Window Track Cleansing"]}
-                />
-              </FadeIn>
-            </div>
+            <StaggerGroup className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <ServiceCard
+                title="Residential Cleaning"
+                slug="residential-cleaning"
+                priceDesc="$40 + GST / hour"
+                description="A refined home clean including detailed kitchen sanitization, vacuuming, mopping, dusting, and linen straightening."
+                features={["Kitchen Counter Polishing", "Bathrooms & Toilet Scrubbing", "Dusting & Cobweb Sweeping", "Floor Mopping & Vacuuming"]}
+              />
+              <ServiceCard
+                title="Commercial Cleaning"
+                slug="commercial-cleaning"
+                priceDesc="$45 + GST / hour"
+                description="Hygienic workspace maintenance for boardrooms, shared desks, staff kitchens, and reception spaces in corporate offices."
+                features={["Desk Sanitation", "Staff Kitchen Deep Cleaning", "Boardroom Upkeep", "Rubbish & Recycle Disposal"]}
+              />
+              <ServiceCard
+                title="Specialized Deep Cleaning"
+                slug="deep-cleaning"
+                priceDesc="Starting at $320 + GST"
+                description="Detailed restorative scrubbing of baseboards, tile grout lines, oven interior walls, and central window frames."
+                features={["Skirting Board Hand-Wiping", "Tile Grout Line Restoration", "Oven Interior Polish", "Window Track Cleansing"]}
+              />
+            </StaggerGroup>
           </Container>
         </MotionSection>
 
@@ -175,54 +169,48 @@ export default function HomePage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 max-w-6xl mx-auto items-center mt-12">
-              <FadeIn delay={0.1} className="lg:col-span-4">
-                <PricingCard
-                  title="2-Bedroom Home"
-                  price="$320"
-                  unit="+ GST flat"
-                  slug="residential-cleaning"
-                  description="Fixed price care for small houses and apartments."
-                  features={[
-                    "Full kitchen sanitization",
-                    "Up to 2 bathrooms scrubbed",
-                    "Vacuuming & mopping Central NZ",
-                    "Standard dust and wipe",
-                  ]}
-                />
-              </FadeIn>
-              <FadeIn delay={0.2} className="lg:col-span-5 relative z-10 lg:-mx-4">
-                <PricingCard
-                  title="3-Bedroom Home"
-                  price="$400"
-                  unit="+ GST flat"
-                  slug="residential-cleaning"
-                  isPopular={true}
-                  description="Perfect layout package for growing Auckland families."
-                  features={[
-                    "Includes 2 full bathrooms",
-                    "Detailed vacuuming and dusting",
-                    "Bed making & surface wipe",
-                    "Central Auckland travel covered",
-                  ]}
-                />
-              </FadeIn>
-              <FadeIn delay={0.3} className="lg:col-span-3">
-                <PricingCard
-                  title="Carpet Clean Add-on"
-                  price="$250"
-                  unit="+ GST flat"
-                  slug="carpet-cleaning"
-                  description="Steam extraction treatment for carpets."
-                  features={[
-                    "2 bedrooms steam cleaned",
-                    "High suction extraction",
-                    "Pet odor neutralization",
-                    "Quick-dry process",
-                  ]}
-                />
-              </FadeIn>
-            </div>
+            <StaggerGroup className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              <PricingCard
+                title="2-Bedroom Home"
+                price="$320"
+                unit="+ GST flat"
+                slug="residential-cleaning"
+                description="Fixed price care for small houses and apartments."
+                features={[
+                  "Full kitchen sanitization",
+                  "Up to 2 bathrooms scrubbed",
+                  "Vacuuming & mopping Central NZ",
+                  "Standard dust and wipe",
+                ]}
+              />
+              <PricingCard
+                title="3-Bedroom Home"
+                price="$400"
+                unit="+ GST flat"
+                slug="residential-cleaning"
+                isPopular={true}
+                description="Perfect layout package for growing Auckland families."
+                features={[
+                  "Includes 2 full bathrooms",
+                  "Detailed vacuuming and dusting",
+                  "Bed making & surface wipe",
+                  "Central Auckland travel covered",
+                ]}
+              />
+              <PricingCard
+                title="Carpet Clean Add-on"
+                price="$250"
+                unit="+ GST flat"
+                slug="carpet-cleaning"
+                description="Steam extraction treatment for carpets."
+                features={[
+                  "2 bedrooms steam cleaned",
+                  "High suction extraction",
+                  "Pet odor neutralization",
+                  "Quick-dry process",
+                ]}
+              />
+            </StaggerGroup>
 
             <div className="text-center pt-4">
               <Link href="/pricing" className="text-xs font-bold uppercase tracking-widest text-primary border-b border-primary hover:text-accent hover:border-accent pb-1 transition-colors">
@@ -245,33 +233,33 @@ export default function HomePage() {
                   We believe premium services require reliable systems. That is why we invest heavily in recruiting experienced staff, standardizing cleaning procedures, and providing clear invoice details.
                 </p>
               </div>
-
-              <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6 relative">
-                <FadeIn delay={0.1} className="space-y-3 p-8 bg-surface shadow-sm border border-border/40 md:mt-12 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                  <span className="font-serif text-xl text-primary tracking-tight">Consistent Cleaners</span>
-                  <p className="text-sm text-stone-500 leading-relaxed min-h-[4rem]">
+              
+              <StaggerGroup className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2 border border-border p-6 bg-surface">
+                  <span className="font-serif text-lg text-primary">Consistent Cleaners</span>
+                  <p className="text-xs text-stone-500 leading-relaxed font-light">
                     We assign the same cleaners to your recurring schedule whenever possible, ensuring they learn your property layouts and details.
                   </p>
-                </FadeIn>
-                <FadeIn delay={0.2} className="space-y-3 p-8 bg-surface shadow-sm border border-border/40 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                  <span className="font-serif text-xl text-primary tracking-tight">Eco-Friendly Solvents</span>
-                  <p className="text-sm text-stone-500 leading-relaxed min-h-[4rem]">
+                </div>
+                <div className="space-y-2 border border-border p-6 bg-surface">
+                  <span className="font-serif text-lg text-primary">Eco-Friendly Solvents</span>
+                  <p className="text-xs text-stone-500 leading-relaxed font-light">
                     We utilize non-toxic, pet-safe, and biodegradable solvents that protect your surfaces, family, and the Auckland ecology.
                   </p>
-                </FadeIn>
-                <FadeIn delay={0.3} className="space-y-3 p-8 bg-surface shadow-sm border border-border/40 md:-mt-6 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                  <span className="font-serif text-xl text-primary tracking-tight">NZ Certified Safety</span>
-                  <p className="text-sm text-stone-500 leading-relaxed min-h-[4rem]">
+                </div>
+                <div className="space-y-2 border border-border p-6 bg-surface">
+                  <span className="font-serif text-lg text-primary">NZ Certified Safety</span>
+                  <p className="text-xs text-stone-500 leading-relaxed font-light">
                     All cleaners undergo security screening and training on surface safety, keeping your fine stones and woods completely safe.
                   </p>
-                </FadeIn>
-                <FadeIn delay={0.4} className="space-y-3 p-8 bg-surface shadow-sm border border-border/40 md:-mt-16 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                  <span className="font-serif text-xl text-primary tracking-tight">Insured Workmanship</span>
-                  <p className="text-sm text-stone-500 leading-relaxed min-h-[4rem]">
+                </div>
+                <div className="space-y-2 border border-border p-6 bg-surface">
+                  <span className="font-serif text-lg text-primary">Insured Workmanship</span>
+                  <p className="text-xs text-stone-500 leading-relaxed font-light">
                     Every reservation is backed by full public liability insurance, providing absolute peace of mind during property access.
                   </p>
-                </FadeIn>
-              </div>
+                </div>
+              </StaggerGroup>
             </div>
           </Container>
         </MotionSection>
