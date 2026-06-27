@@ -12,6 +12,14 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
+export async function generateStaticParams() {
+  const posts = await prisma.blogPost.findMany({
+    where: { isPublished: true },
+    select: { slug: true },
+  });
+  return posts.map((post) => ({ slug: post.slug }));
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await prisma.blogPost.findUnique({
@@ -24,13 +32,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const plainText = post.content
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Extract text from links
+    .replace(/[#*_~`>]/g, '')                // Remove common markdown chars
+    .replace(/\s+/g, ' ')                    // Collapse multiple spaces
+    .trim();
+  const description = post.excerpt || (plainText.length > 160 ? `${plainText.substring(0, 157)}...` : plainText);
+
   return {
     title: `${post.title} | PureSweep Blog`,
-    description: post.excerpt || post.content.substring(0, 160),
+    description,
+    alternates: {
+      canonical: `https://puresweep.co.nz/blog/${slug}`,
+    },
     openGraph: {
       title: post.title,
-      description: post.excerpt || post.content.substring(0, 160),
+      description,
       type: "article",
+      url: `https://puresweep.co.nz/blog/${slug}`,
       publishedTime: post.publishedAt?.toISOString(),
       authors: [post.author],
       images: post.imageUrl ? [{ url: post.imageUrl }] : [],
@@ -47,6 +66,13 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) {
     notFound();
   }
+
+  const plainText = post.content
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Extract text from links
+    .replace(/[#*_~`>]/g, '')                // Remove common markdown chars
+    .replace(/\s+/g, ' ')                    // Collapse multiple spaces
+    .trim();
+  const description = post.excerpt || (plainText.length > 160 ? `${plainText.substring(0, 157)}...` : plainText);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -67,7 +93,7 @@ export default async function BlogPostPage({ params }: Props) {
         url: "https://puresweep.co.nz/icon.png",
       },
     },
-    description: post.excerpt || post.content.substring(0, 160),
+    description,
   };
 
   return (

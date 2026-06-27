@@ -18,19 +18,16 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   title: {
-    default: "PureSweep Cleaning | Premium Cleaning Services in Auckland",
-    template: "%s | PureSweep Cleaning"
+    default: "House & Office Cleaning Auckland | PureSweep",
+    template: "%s | Auckland House Cleaning | PureSweep"
   },
-  description: "Refined residential, commercial, deep, carpet, and move-in/move-out cleaning services in Auckland, New Zealand. Experience an immaculate, bespoke cleaning service.",
+  description: "Auckland's premium house cleaning and office cleaning service. Refined residential, commercial, deep, and carpet cleaning.",
   metadataBase: new URL("https://puresweep.co.nz"),
-  alternates: {
-    canonical: "/",
-  },
 
   manifest: "/site.webmanifest",
   openGraph: {
-    title: "PureSweep Cleaning | Premium Cleaning Services in Auckland",
-    description: "Refined residential, commercial, deep, carpet, and move-in/move-out cleaning services in Auckland, New Zealand.",
+    title: "House & Office Cleaning Auckland | PureSweep",
+    description: "Auckland's premium house cleaning and office cleaning service. Refined residential, commercial, deep, and carpet cleaning.",
     locale: "en_NZ",
     type: "website",
     images: [
@@ -44,8 +41,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PureSweep Cleaning | Premium Cleaning Services in Auckland",
-    description: "Refined residential, commercial, deep, carpet, and move-in/move-out cleaning services in Auckland, New Zealand.",
+    title: "House & Office Cleaning Auckland | PureSweep",
+    description: "Auckland's premium house cleaning and office cleaning service.",
     images: ["/images/og-image.png"],
   },
 };
@@ -56,7 +53,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+    <html lang="en-NZ" className="scroll-smooth" suppressHydrationWarning>
       <body className={`${fraunces.variable} ${manrope.variable} ${GeistMono.variable} font-sans antialiased`}>
         {children}
       </body>

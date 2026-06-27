@@ -9,13 +9,13 @@ const slides = [
   {
     image: "/images/hero_residential.png",
     subtitle: "Central & West Auckland Care",
-    title: "PureSweep Residential Cleaning",
-    description: "Consistent home service standards, delivered with transparent hourly rates and meticulous workmanship.",
+    title: "PureSweep House Cleaning",
+    description: "Consistent home cleaning standards, delivered with transparent hourly rates and meticulous workmanship.",
   },
   {
     image: "/images/hero_commercial.png",
     subtitle: "Professional Corporate Standards",
-    title: "Premium Commercial Spaces",
+    title: "Premium Office Cleaning",
     description: "Impeccable meeting rooms and workspaces configured for Auckland's leading commercial offices.",
   },
   {

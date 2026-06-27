@@ -61,6 +61,8 @@ export async function createService(data: unknown) {
     await logActivity("CREATE_SERVICE", `Created service "${service.name}"`);
     revalidatePath("/admin/services");
     revalidatePath("/admin/pricing");
+    revalidatePath("/services");
+    revalidatePath("/services/[slug]", "page");
     return { success: true, service };
   } catch (error: any) {
     console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to create service." };
@@ -94,6 +96,8 @@ export async function updateService(id: string, data: unknown) {
     await logActivity("UPDATE_SERVICE", `Updated service "${service.name}"`);
     revalidatePath("/admin/services");
     revalidatePath("/admin/pricing");
+    revalidatePath("/services");
+    revalidatePath("/services/[slug]", "page");
     return { success: true, service };
   } catch (error: any) {
     console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to update service." };
@@ -111,6 +115,9 @@ export async function deleteService(id: string) {
     await logActivity("DELETE_SERVICE", `Deleted service "${service.name}"`);
     revalidatePath("/admin/services");
     revalidatePath("/admin/pricing");
+    revalidatePath("/services");
+    revalidatePath(`/services/${service.slug}`);
+    revalidatePath("/services/[slug]", "page");
     return { success: true };
   } catch (error: any) {
     console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to delete service." };

@@ -64,7 +64,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     {
       url: `${baseUrl}/book-a-cleaning`,
       lastModified: new Date(),
-      changeFrequency: 'always',
+      changeFrequency: 'monthly',
       priority: 0.9,
     },
     {

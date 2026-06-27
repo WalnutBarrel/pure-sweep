@@ -16,8 +16,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const descSetting = await prisma.setting.findUnique({ where: { key: "seo_home_desc" } });
 
   return {
-    title: titleSetting?.value || "PureSweep Cleaning | Premium Cleaning Services in Auckland",
-    description: descSetting?.value || "Refined residential, commercial, deep, carpet, and move-in/move-out cleaning services in Auckland.",
+    title: titleSetting?.value || "House Cleaning Auckland | Residential & Office Cleaning | PureSweep",
+    description: descSetting?.value || "Auckland's premium house cleaning and office cleaning service. Refined residential, commercial, deep, and carpet cleaning.",
+    alternates: {
+      canonical: "https://puresweep.co.nz",
+    },
   };
 }
 
@@ -27,7 +30,7 @@ export default function HomePage() {
     "@type": "LocalBusiness",
     "name": "Puresweep",
     "image": "https://puresweep.co.nz/icon.png",
-    "description": "Refined residential, commercial, deep, carpet, and move-in/move-out cleaning services in Auckland, New Zealand.",
+    "description": "Auckland's premium house cleaning and office cleaning service. Refined residential, commercial, deep, and carpet cleaning.",
     "url": "https://puresweep.co.nz",
     "telephone": "0210 269 9956",
     "address": {
@@ -37,7 +40,25 @@ export default function HomePage() {
       "postalCode": "1042",
       "addressCountry": "NZ"
     },
-    "areaServed": "Auckland",
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "-36.9171",
+      "longitude": "174.7478"
+    },
+    "openingHours": "Mo,Tu,We,Th,Fr 08:00-18:00",
+    "sameAs": [
+      "https://www.facebook.com/puresweep",
+      "https://www.instagram.com/puresweep"
+    ],
+    "areaServed": [
+      { "@type": "City", "name": "Auckland" },
+      { "@type": "Place", "name": "Ponsonby" },
+      { "@type": "Place", "name": "Grey Lynn" },
+      { "@type": "Place", "name": "Remuera" },
+      { "@type": "Place", "name": "Parnell" },
+      { "@type": "Place", "name": "Epsom" },
+      { "@type": "Place", "name": "Mount Eden" }
+    ],
     "priceRange": "$$"
   };
 
@@ -97,12 +118,12 @@ export default function HomePage() {
               <div className="lg:col-span-5">
                 <span className="font-caption block mb-3">Our Philosophy</span>
                 <h2 className="font-serif text-[34px] md:text-[42px] lg:text-[48px] leading-[1.1] text-primary font-light">
-                  <RevealText text="Crafting serene, organized environments." />
+                  <RevealText text="Auckland's Premium Home & Office Cleaning Service." />
                 </h2>
               </div>
               <div className="lg:col-span-7 space-y-6 text-stone-600">
                 <p className="text-base font-light leading-relaxed">
-                  At PureSweep, we believe a clean environment is the foundation of clear thinking. We provide Auckland homeowners and businesses with consistent cleaning standards, verified workmen, and simple, upfront booking processes.
+                  At PureSweep, we believe a professionally cleaned home is the foundation of clear thinking. We provide Auckland homeowners and businesses with consistent house cleaning standards, verified workmen, and simple, upfront booking processes.
                 </p>
                 <p className="text-sm leading-relaxed">
                   Our cleaners are trained to work in pairs with precise checklists, ensuring no detail is overlooked, from the high corners of your residential kitchen to the shared workspaces of your downtown commercial office.
