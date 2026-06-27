@@ -4,13 +4,22 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { requireAdmin } from "@/lib/auth-utils";
+import { adminBlogSchema } from "@/schemas";
+
 export async function createBlogPost(formData: FormData) {
-  const title = formData.get("title") as string;
-  let slug = formData.get("slug") as string;
-  const excerpt = formData.get("excerpt") as string;
-  const content = formData.get("content") as string;
-  const imageUrl = formData.get("imageUrl") as string;
-  const isPublished = formData.get("isPublished") === "on";
+  await requireAdmin();
+  const parsed = adminBlogSchema.parse({
+    title: formData.get("title"),
+    slug: formData.get("slug"),
+    excerpt: formData.get("excerpt"),
+    content: formData.get("content"),
+    imageUrl: formData.get("imageUrl"),
+    isPublished: formData.get("isPublished") === "on",
+  });
+  const { title, excerpt, content, isPublished } = parsed;
+  let { slug } = parsed;
+  const imageUrl = parsed.imageUrl && parsed.imageUrl !== "" ? parsed.imageUrl : null;
 
   // Ensure slug uniqueness to prevent crashes on double-clicks or reused slugs
   const existingPost = await prisma.blogPost.findUnique({ where: { slug } });
@@ -36,6 +45,7 @@ export async function createBlogPost(formData: FormData) {
 }
 
 export async function deleteBlogPost(id: string) {
+  await requireAdmin();
   try {
     await prisma.blogPost.delete({ where: { id } });
   } catch (error) {
@@ -46,12 +56,18 @@ export async function deleteBlogPost(id: string) {
 }
 
 export async function updateBlogPost(id: string, formData: FormData) {
-  const title = formData.get("title") as string;
-  let slug = formData.get("slug") as string;
-  const excerpt = formData.get("excerpt") as string;
-  const content = formData.get("content") as string;
-  const imageUrl = formData.get("imageUrl") as string;
-  const isPublished = formData.get("isPublished") === "on";
+  await requireAdmin();
+  const parsed = adminBlogSchema.parse({
+    title: formData.get("title"),
+    slug: formData.get("slug"),
+    excerpt: formData.get("excerpt"),
+    content: formData.get("content"),
+    imageUrl: formData.get("imageUrl"),
+    isPublished: formData.get("isPublished") === "on",
+  });
+  const { title, excerpt, content, isPublished } = parsed;
+  let { slug } = parsed;
+  const imageUrl = parsed.imageUrl && parsed.imageUrl !== "" ? parsed.imageUrl : null;
 
   const existingPost = await prisma.blogPost.findUnique({ where: { slug } });
   if (existingPost && existingPost.id !== id) {
@@ -85,3 +101,4 @@ export async function updateBlogPost(id: string, formData: FormData) {
   revalidatePath("/admin/blog");
   redirect("/admin/blog");
 }
+

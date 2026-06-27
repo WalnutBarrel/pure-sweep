@@ -180,7 +180,7 @@ async function main() {
   console.log("Pricing plans seeded.");
 
   // 3. Create Users
-  const hashedPassword = await bcrypt.hash("Password123!", 10);
+  const crypto = require("crypto"); const randomPassword = crypto.randomBytes(8).toString("hex"); console.log("Seeded user password: " + randomPassword); const hashedPassword = await bcrypt.hash(process.env.ADMIN_SEED_PASSWORD || randomPassword, 10);
 
   // Owner
   const ownerUser = await prisma.user.create({
@@ -602,3 +602,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+

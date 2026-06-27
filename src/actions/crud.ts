@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth-utils";
+import { randomBytes } from "crypto";
 import {
   adminServiceSchema,
   adminPricingPlanSchema,
@@ -62,7 +63,7 @@ export async function createService(data: unknown) {
     revalidatePath("/admin/pricing");
     return { success: true, service };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to create service." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to create service." };
   }
 }
 
@@ -95,7 +96,7 @@ export async function updateService(id: string, data: unknown) {
     revalidatePath("/admin/pricing");
     return { success: true, service };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to update service." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to update service." };
   }
 }
 
@@ -112,7 +113,7 @@ export async function deleteService(id: string) {
     revalidatePath("/admin/pricing");
     return { success: true };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to delete service." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to delete service." };
   }
 }
 
@@ -143,7 +144,7 @@ export async function createPricingPlan(data: unknown) {
     revalidatePath("/admin/pricing");
     return { success: true, plan };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to create pricing plan." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to create pricing plan." };
   }
 }
 
@@ -172,7 +173,7 @@ export async function updatePricingPlan(id: string, data: unknown) {
     revalidatePath("/admin/pricing");
     return { success: true, plan };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to update pricing plan." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to update pricing plan." };
   }
 }
 
@@ -188,7 +189,7 @@ export async function deletePricingPlan(id: string) {
     revalidatePath("/admin/pricing");
     return { success: true };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to delete pricing plan." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to delete pricing plan." };
   }
 }
 
@@ -209,7 +210,7 @@ export async function createBookingAdmin(data: unknown) {
     });
     const serviceName = service ? service.name : "Residential Cleaning";
 
-    const bookingRef = `PS-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    let bookingRef = ""; let isUniqueB = false; while (!isUniqueB) { bookingRef = `PS-${randomBytes(6).toString("hex").toUpperCase()}`; const existing = await prisma.booking.findFirst({ where: { bookingRef } }); if (!existing) isUniqueB = true; }
     const booking = await prisma.booking.create({
       data: {
         bookingRef,
@@ -251,7 +252,7 @@ export async function createBookingAdmin(data: unknown) {
     revalidatePath("/admin/dashboard");
     return { success: true, booking };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to create booking." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to create booking." };
   }
 }
 
@@ -320,7 +321,7 @@ export async function updateBookingAdmin(id: string, data: unknown) {
     revalidatePath("/admin/dashboard");
     return { success: true, booking };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to update booking." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to update booking." };
   }
 }
 
@@ -337,7 +338,7 @@ export async function deleteBookingAdmin(id: string) {
     revalidatePath("/admin/dashboard");
     return { success: true };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to delete booking." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to delete booking." };
   }
 }
 
@@ -369,7 +370,7 @@ export async function createCustomer(data: unknown) {
     revalidatePath("/admin/dashboard");
     return { success: true, customer };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to create customer." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to create customer." };
   }
 }
 
@@ -399,7 +400,7 @@ export async function updateCustomer(id: string, data: unknown) {
     revalidatePath("/admin/dashboard");
     return { success: true, customer };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to update customer." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to update customer." };
   }
 }
 
@@ -416,7 +417,7 @@ export async function deleteCustomer(id: string) {
     revalidatePath("/admin/dashboard");
     return { success: true };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to delete customer." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to delete customer." };
   }
 }
 
@@ -432,10 +433,18 @@ export async function createInvoice(data: unknown) {
   }
 
   try {
-    const invoiceNumber = `INV-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    let invoiceNumber: string;
+    let isUnique = false;
+    while (!isUnique) {
+      invoiceNumber = `INV-${randomBytes(6).toString("hex").toUpperCase()}`;
+      const existing = await prisma.invoice.findFirst({ where: { invoiceNumber } });
+      if (!existing) isUnique = true;
+    }
+    const finalInvoiceNumber = invoiceNumber!;
+
     const invoice = await prisma.invoice.create({
       data: {
-        invoiceNumber,
+        invoiceNumber: finalInvoiceNumber,
         customerId: result.data.customerId,
         bookingId: result.data.bookingId,
         issueDate: new Date(result.data.issueDate),
@@ -447,18 +456,17 @@ export async function createInvoice(data: unknown) {
       },
     });
 
-    await logActivity("CREATE_INVOICE", `Generated invoice "${invoiceNumber}"`);
+    await logActivity("CREATE_INVOICE", `Generated invoice "${finalInvoiceNumber}"`);
     revalidatePath("/admin/invoices");
     revalidatePath("/admin/dashboard");
     return { success: true, invoice };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to generate invoice." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to generate invoice." };
   }
 }
 
 export async function updateInvoice(id: string, data: unknown) {
   await requireAdmin();
-
   const result = adminInvoiceSchema.safeParse(data);
   if (!result.success) {
     return { success: false, errors: result.error.flatten().fieldErrors };
@@ -484,7 +492,7 @@ export async function updateInvoice(id: string, data: unknown) {
     revalidatePath("/admin/dashboard");
     return { success: true, invoice };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to update invoice." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to update invoice." };
   }
 }
 
@@ -501,7 +509,7 @@ export async function deleteInvoice(id: string) {
     revalidatePath("/admin/dashboard");
     return { success: true };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to delete invoice." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to delete invoice." };
   }
 }
 
@@ -546,7 +554,7 @@ export async function createPayment(data: unknown) {
     revalidatePath("/admin/dashboard");
     return { success: true, payment };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to record payment." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to record payment." };
   }
 }
 
@@ -579,7 +587,7 @@ export async function createExpense(data: unknown) {
     revalidatePath("/admin/dashboard");
     return { success: true, expense };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to log expense." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to log expense." };
   }
 }
 
@@ -610,7 +618,7 @@ export async function updateExpense(id: string, data: unknown) {
     revalidatePath("/admin/dashboard");
     return { success: true, expense };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to update expense." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to update expense." };
   }
 }
 
@@ -627,7 +635,7 @@ export async function deleteExpense(id: string) {
     revalidatePath("/admin/dashboard");
     return { success: true };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to delete expense." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to delete expense." };
   }
 }
 
@@ -681,7 +689,7 @@ export async function createStaff(data: unknown) {
     revalidatePath("/admin/dashboard");
     return { success: true, staff };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to hire staff." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to hire staff." };
   }
 }
 
@@ -709,7 +717,7 @@ export async function updateStaff(id: string, data: unknown) {
     revalidatePath("/admin/dashboard");
     return { success: true, staff };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to update staff." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to update staff." };
   }
 }
 
@@ -725,7 +733,7 @@ export async function deleteStaff(id: string) {
     revalidatePath("/admin/dashboard");
     return { success: true };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to delete staff." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to delete staff." };
   }
 }
 
@@ -756,7 +764,7 @@ export async function createTestimonial(data: unknown) {
     revalidatePath("/");
     return { success: true, testimonial };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to add testimonial." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to add testimonial." };
   }
 }
 
@@ -785,7 +793,7 @@ export async function updateTestimonial(id: string, data: unknown) {
     revalidatePath("/");
     return { success: true, testimonial };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to update testimonial." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to update testimonial." };
   }
 }
 
@@ -801,7 +809,7 @@ export async function deleteTestimonial(id: string) {
     revalidatePath("/");
     return { success: true };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to delete testimonial." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to delete testimonial." };
   }
 }
 
@@ -823,7 +831,7 @@ export async function updateSetting(key: string, value: string, description?: st
     revalidatePath("/", "layout"); // Revalidate entire site so footer updates instantly
     return { success: true, setting };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to update system settings." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to update system settings." };
   }
 }
 
@@ -845,7 +853,7 @@ export async function updateContactMessageStatus(id: string, status: MessageStat
     revalidatePath("/admin/messages");
     return { success: true, message };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to update inquiry status." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to update inquiry status." };
   }
 }
 
@@ -861,6 +869,8 @@ export async function deleteContactMessage(id: string) {
     revalidatePath("/admin/messages");
     return { success: true };
   } catch (error: any) {
-    return { success: false, message: error.message || "Failed to delete inquiry." };
+    console.error("DB Error:", error); if (error.code === "P2002") return { success: false, message: "A record with this value already exists." }; return { success: false, message: "Failed to delete inquiry." };
   }
 }
+
+

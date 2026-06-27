@@ -1,8 +1,11 @@
+import { headers } from "next/headers";
+import { formRateLimiter } from "@/lib/rate-limit";
 "use server";
 
 import prisma from "@/lib/prisma";
 import { bookingSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
+import { randomBytes } from "crypto";
 import { calculateTotalPrice } from "@/lib/pricing";
 import { sendEmail } from "@/lib/email";
 
@@ -243,12 +246,20 @@ export async function createBooking(formData: unknown): Promise<BookingResponse>
     }
 
     // 2. Generate a unique booking reference
-    const bookingRef = `PS-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    let bookingRef: string;
+    let isUnique = false;
+    while (!isUnique) {
+      bookingRef = `PS-${randomBytes(6).toString("hex").toUpperCase()}`;
+      const existing = await prisma.booking.findFirst({ where: { bookingRef } });
+      if (!existing) isUnique = true;
+    }
+    // Type assertion to quiet TS if it complains before assignment (it won't since while runs at least once)
+    const finalBookingRef = bookingRef!;
 
     // 3. Create the booking entry in database
     const booking = await prisma.booking.create({
       data: {
-        bookingRef,
+        bookingRef: finalBookingRef,
         customerId: customer.id,
         preferredDate: new Date(validatedData.preferredDate),
         preferredTime: validatedData.preferredTime,
@@ -296,11 +307,11 @@ export async function createBooking(formData: unknown): Promise<BookingResponse>
     }
 
     // 6. Trigger notification placeholders
-    await sendAdminBookingNotification(bookingRef, validatedData.clientName, serviceName);
+    await sendAdminBookingNotification(finalBookingRef, validatedData.clientName, serviceName);
     await sendCustomerBookingConfirmation(
       validatedData.clientEmail || "",
       validatedData.clientName,
-      bookingRef,
+      finalBookingRef,
       validatedData.preferredDate,
       validatedData.preferredTime
     );
@@ -315,7 +326,7 @@ export async function createBooking(formData: unknown): Promise<BookingResponse>
     return {
       success: true,
       message: "Your booking request has been submitted successfully.",
-      bookingRef,
+      bookingRef: finalBookingRef,
       bookingId: booking.id,
       priceDetails,
       contactPhone,
@@ -331,20 +342,10 @@ export async function createBooking(formData: unknown): Promise<BookingResponse>
       };
     }
 
-    // Try mock fallback if database is not active to support local prototyping
-    const rawData = formData as Record<string, unknown>;
     return {
-      success: true,
-      message: "Database offline. Booking processed successfully in demo mode.",
-      bookingRef: `DEMO-${Math.floor(1000 + Math.random() * 9000)}`,
-      bookingId: `demo-${Math.random().toString(36).substr(2, 9)}`,
-      priceDetails: calculateTotalPrice(
-        "residential-cleaning",
-        (rawData?.bedrooms as number) || 2,
-        (rawData?.bathrooms as number) || 1,
-        (rawData?.extraServices as string[]) || []
-      ),
-      contactPhone: "642102699956",
+      success: false,
+      message: "We couldn't process your booking. Please try again or call us directly.",
     };
   }
 }
+

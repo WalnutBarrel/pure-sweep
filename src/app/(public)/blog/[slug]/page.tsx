@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, Calendar, User } from "lucide-react";
 import { FadeIn } from "@/components/motion/MotionComponents";
 import ReactMarkdown from "react-markdown";
+import Image from "next/image";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -104,9 +105,11 @@ export default async function BlogPostPage({ params }: Props) {
             
             {post.imageUrl && (
               <div className="mb-12 aspect-[21/9] w-full overflow-hidden bg-stone-100 rounded-sm">
-                <img 
+                <Image 
                   src={post.imageUrl} 
-                  alt={post.title} 
+                  alt={post.title}
+                  width={1200}
+                  height={630}
                   className="w-full h-full object-cover" 
                 />
               </div>

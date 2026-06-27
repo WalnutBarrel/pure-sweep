@@ -52,6 +52,8 @@ model User {
   image         String?
   password      String?         // Hashed password for credentials auth
   role          UserRole        @default(CUSTOMER)
+  failedLoginAttempts Int             @default(0)
+  lockedUntil         DateTime?
   
   accounts      Account[]
   sessions      Session[]
@@ -409,3 +411,4 @@ model BlogPost {
   @@index([slug])
   @@index([isPublished])
 }
+

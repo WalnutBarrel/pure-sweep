@@ -1,3 +1,5 @@
+import { headers } from "next/headers";
+import { formRateLimiter } from "@/lib/rate-limit";
 "use server";
 
 import prisma from "@/lib/prisma";
@@ -11,7 +13,7 @@ export interface ContactResponse {
   message: string;
 }
 
-export async function submitContactForm(formData: unknown): Promise<ContactResponse> {
+export async function submitContactForm(formData: unknown): Promise<ContactResponse> {`n  const ip = (await headers()).get("x-forwarded-for") || "unknown";`n  if (!formRateLimiter.check(ip)) return { success: false, message: "Too many requests. Please try again later." };
   try {
     // Validate inputs using Zod Schema
     const validatedData = contactSchema.parse(formData);
@@ -52,10 +54,10 @@ export async function submitContactForm(formData: unknown): Promise<ContactRespo
       };
     }
 
-    // Mock fallback when database is disconnected to ensure client usability
     return {
-      success: true,
-      message: "Database offline. Message received successfully in demo mode.",
+      success: false,
+      message: "An unexpected error occurred. Please try again later.",
     };
   }
 }
+
