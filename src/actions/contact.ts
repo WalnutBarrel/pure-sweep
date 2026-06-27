@@ -1,6 +1,6 @@
+"use server";
 import { headers } from "next/headers";
 import { formRateLimiter } from "@/lib/rate-limit";
-"use server";
 
 import prisma from "@/lib/prisma";
 import { contactSchema } from "@/schemas";
@@ -13,7 +13,9 @@ export interface ContactResponse {
   message: string;
 }
 
-export async function submitContactForm(formData: unknown): Promise<ContactResponse> {`n  const ip = (await headers()).get("x-forwarded-for") || "unknown";`n  if (!formRateLimiter.check(ip)) return { success: false, message: "Too many requests. Please try again later." };
+export async function submitContactForm(formData: unknown): Promise<ContactResponse> {
+  const ip = (await headers()).get("x-forwarded-for") || "unknown";
+  if (!formRateLimiter.check(ip)) return { success: false, message: "Too many requests. Please try again later." };
   try {
     // Validate inputs using Zod Schema
     const validatedData = contactSchema.parse(formData);
