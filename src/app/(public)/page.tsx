@@ -8,31 +8,44 @@ import ServiceCard from "@/components/ServiceCard";
 import PricingCard from "@/components/PricingCard";
 import BookingCTA from "@/components/BookingCTA";
 import TestimonialsSlider from "@/components/TestimonialsSlider";
+import FaqSection from "@/components/FaqSection";
+import { FAQ_ITEMS } from "@/lib/faqs";
 import { FadeIn, RevealText, StaggerGroup, MotionSection } from "@/components/motion/MotionComponents";
 import { CheckCircle2, ShieldCheck, Zap, Heart } from "lucide-react";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const titleSetting = await prisma.setting.findUnique({ where: { key: "seo_home_title" } });
-  const descSetting = await prisma.setting.findUnique({ where: { key: "seo_home_desc" } });
+  try {
+    const titleSetting = await prisma.setting.findUnique({ where: { key: "seo_home_title" } }).catch(() => null);
+    const descSetting = await prisma.setting.findUnique({ where: { key: "seo_home_desc" } }).catch(() => null);
 
-  return {
-    title: titleSetting?.value || "House Cleaning Auckland | Residential & Office Cleaning | PureSweep",
-    description: descSetting?.value || "Auckland's premium house cleaning and office cleaning service. Refined residential, commercial, deep, and carpet cleaning.",
-    alternates: {
-      canonical: "https://puresweep.co.nz",
-    },
-  };
+    return {
+      title: titleSetting?.value || "House Cleaning Auckland | Residential & Office Cleaning | PureSweep",
+      description: descSetting?.value || "Auckland's premium house cleaning and office cleaning service. Refined residential, commercial, deep, and carpet cleaning.",
+      alternates: {
+        canonical: "https://puresweep.co.nz",
+      },
+    };
+  } catch {
+    return {
+      title: "House Cleaning Auckland | Residential & Office Cleaning | PureSweep",
+      description: "Auckland's premium house cleaning and office cleaning service. Refined residential, commercial, deep, and carpet cleaning.",
+      alternates: {
+        canonical: "https://puresweep.co.nz",
+      },
+    };
+  }
 }
 
 export default function HomePage() {
-  const jsonLd = {
+  const localBusinessJsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "Puresweep",
+    "name": "PureSweep Cleaning Auckland",
     "image": "https://puresweep.co.nz/icon.png",
     "description": "Auckland's premium house cleaning and office cleaning service. Refined residential, commercial, deep, and carpet cleaning.",
     "url": "https://puresweep.co.nz",
     "telephone": "0210 269 9956",
+    "priceRange": "$$",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Hillsborough",
@@ -57,16 +70,34 @@ export default function HomePage() {
       { "@type": "Place", "name": "Remuera" },
       { "@type": "Place", "name": "Parnell" },
       { "@type": "Place", "name": "Epsom" },
-      { "@type": "Place", "name": "Mount Eden" }
-    ],
-    "priceRange": "$$"
+      { "@type": "Place", "name": "Mount Eden" },
+      { "@type": "Place", "name": "Takapuna" },
+      { "@type": "Place", "name": "North Shore" }
+    ]
+  };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": FAQ_ITEMS.map((item) => ({
+      "@type": "Question",
+      "name": item.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.answer,
+      },
+    })),
   };
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <div className="space-y-24 pb-20 overflow-x-hidden">
         {/* 2. Editorial Hero with Slow Slider */}
@@ -288,7 +319,12 @@ export default function HomePage() {
         {/* 8. Testimonials Slider */}
         <TestimonialsSlider />
 
-        {/* 9. Booking Call-to-Action */}
+        {/* 9. FAQ Section */}
+        <FadeIn>
+          <FaqSection />
+        </FadeIn>
+
+        {/* 10. Booking Call-to-Action */}
         <FadeIn>
           <BookingCTA />
         </FadeIn>
