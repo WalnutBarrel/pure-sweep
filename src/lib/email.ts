@@ -6,22 +6,40 @@ export async function sendEmail({
   to,
   subject,
   html,
+  text,
+  replyTo,
 }: {
   to: string | string[];
   subject: string;
   html: string;
+  text?: string;
+  replyTo?: string;
 }) {
   if (!process.env.RESEND_API_KEY) {
     console.warn("RESEND_API_KEY is not set. Email not sent:", { to, subject });
     return { success: true, mock: true };
   }
 
+  // Generate plain text fallback if not provided
+  const plainText =
+    text ||
+    html
+      .replace(/<style[^>]*>.*<\/style>/gs, "")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
   try {
     const data = await resend.emails.send({
-      from: "PureSweep Notifications <inquiries@puresweep.co.nz>",
+      from: "PureSweep Cleaning <inquiries@puresweep.co.nz>",
       to,
+      replyTo: replyTo || "contact.puresweep@gmail.com",
       subject,
       html,
+      text: plainText,
+      headers: {
+        "X-Entity-Ref-ID": `${Date.now()}`,
+      },
     });
 
     if (data.error) {

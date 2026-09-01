@@ -131,6 +131,7 @@ export async function sendAdminInquiryNotification(
 
   await sendEmail({
     to: adminEmail,
+    replyTo: email,
     subject: `[INQUIRY] New Contact Message from ${name}`,
     html: `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #fafaf9; padding: 40px 20px; color: #1c1917;">
