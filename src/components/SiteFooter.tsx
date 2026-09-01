@@ -57,6 +57,11 @@ export default async function SiteFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/locations" className="hover:text-accent transition-colors duration-hover">
+                  Service Areas
+                </Link>
+              </li>
+              <li>
                 <Link href="/contact" className="hover:text-accent transition-colors duration-hover">
                   Get In Touch
                 </Link>
@@ -102,6 +107,34 @@ export default async function SiteFooter() {
                 Booking updates processed daily.
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* Areas We Service Strip */}
+        <div className="border-t border-[#2D3835] pt-8 space-y-3">
+          <h4 className="text-[10px] uppercase tracking-widest font-bold text-white">
+            Auckland Service Areas
+          </h4>
+          <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-[#B2ABA0]">
+            <Link href="/locations/ponsonby" className="hover:text-accent transition-colors">Ponsonby</Link>
+            <span>&bull;</span>
+            <Link href="/locations/remuera" className="hover:text-accent transition-colors">Remuera</Link>
+            <span>&bull;</span>
+            <Link href="/locations/grey-lynn" className="hover:text-accent transition-colors">Grey Lynn</Link>
+            <span>&bull;</span>
+            <Link href="/locations/auckland-cbd" className="hover:text-accent transition-colors">Auckland CBD</Link>
+            <span>&bull;</span>
+            <Link href="/locations/north-shore" className="hover:text-accent transition-colors">North Shore</Link>
+            <span>&bull;</span>
+            <Link href="/locations/manukau" className="hover:text-accent transition-colors">Manukau</Link>
+            <span>&bull;</span>
+            <Link href="/locations/east-tamaki" className="hover:text-accent transition-colors">East Tamaki</Link>
+            <span>&bull;</span>
+            <Link href="/locations/mount-eden" className="hover:text-accent transition-colors">Mount Eden</Link>
+            <span>&bull;</span>
+            <Link href="/locations/hillsborough" className="hover:text-accent transition-colors">Hillsborough</Link>
+            <span>&bull;</span>
+            <Link href="/locations" className="text-accent hover:underline">All Suburbs &rarr;</Link>
           </div>
         </div>
 

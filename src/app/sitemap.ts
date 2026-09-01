@@ -1,33 +1,50 @@
 import { MetadataRoute } from 'next';
 import prisma from "@/lib/prisma";
+import { AUCKLAND_LOCATIONS } from "@/lib/locations";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://puresweep.co.nz";
   
-  // Fetch published blog posts for the sitemap
-  const posts = await prisma.blogPost.findMany({
-    where: { isPublished: true },
-    select: { slug: true, updatedAt: true },
-  });
+  let blogUrls: MetadataRoute.Sitemap = [];
+  let serviceUrls: MetadataRoute.Sitemap = [];
 
-  const blogUrls = posts.map((post) => ({
-    url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: post.updatedAt,
+  try {
+    const posts = await prisma.blogPost.findMany({
+      where: { isPublished: true },
+      select: { slug: true, updatedAt: true },
+    });
+
+    blogUrls = posts.map((post) => ({
+      url: `${baseUrl}/blog/${post.slug}`,
+      lastModified: post.updatedAt,
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }));
+  } catch (e) {
+    console.warn("Could not fetch blog posts for sitemap", e);
+  }
+
+  try {
+    const services = await prisma.service.findMany({
+      where: { isActive: true },
+      select: { slug: true, updatedAt: true },
+    });
+
+    serviceUrls = services.map((service) => ({
+      url: `${baseUrl}/services/${service.slug}`,
+      lastModified: service.updatedAt,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    }));
+  } catch (e) {
+    console.warn("Could not fetch services for sitemap", e);
+  }
+
+  const locationUrls: MetadataRoute.Sitemap = AUCKLAND_LOCATIONS.map((loc) => ({
+    url: `${baseUrl}/locations/${loc.slug}`,
+    lastModified: new Date(),
     changeFrequency: 'weekly' as const,
-    priority: 0.7,
-  }));
-
-  // Fetch active services for the sitemap
-  const services = await prisma.service.findMany({
-    where: { isActive: true },
-    select: { slug: true, updatedAt: true },
-  });
-
-  const serviceUrls = services.map((service) => ({
-    url: `${baseUrl}/services/${service.slug}`,
-    lastModified: service.updatedAt,
-    changeFrequency: 'monthly' as const,
-    priority: 0.8,
+    priority: 0.85,
   }));
 
   return [
@@ -54,6 +71,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/locations`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/contact`,
@@ -85,6 +108,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
+    ...locationUrls,
     ...blogUrls,
     ...serviceUrls,
   ];
