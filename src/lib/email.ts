@@ -24,7 +24,7 @@ export async function sendEmail({
   const plainText =
     text ||
     html
-      .replace(/<style[^>]*>.*<\/style>/gs, "")
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
       .replace(/<[^>]+>/g, " ")
       .replace(/\s+/g, " ")
       .trim();
