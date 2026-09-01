@@ -152,9 +152,7 @@ export async function sendAdminInquiryNotification(
               </tr>
               <tr>
                 <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f4; color: #78716c; font-size: 14px;">Email</td>
-                <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f4; color: #1c1917; font-size: 15px; font-weight: 500;">
-                  <a href="mailto:${email}" style="color: #1c1917; text-decoration: underline;">${email}</a>
-                </td>
+                <td style="padding: 12px 0; border-bottom: 1px solid #f5f5f4; color: #1c1917; font-size: 15px; font-weight: 500;">${email}</td>
               </tr>
             </table>
 
